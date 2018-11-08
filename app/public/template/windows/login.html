@@ -1,0 +1,53 @@
+<div ng-if="!isLogin" class="lmc-login-warp">
+    <div class="text-center">
+        <form name="login_form" class="form-signin" ng-if="loginMode">
+            <h1 class="h3 mb-3 font-weight-normal">请登录</h1>
+            <label for="login_username" class="sr-only">帐号</label>
+            <input name="username" ng-model="loginData.username" type="text" id="login_username" class="form-control lmc-topinput" placeholder="帐号" minlength="3" maxlength="20" required autofocus>
+            <label for="login_password" class="sr-only">密码</label>
+            <input name="password" ng-model="loginData.password" type="password" id="login_password" class="form-control mb-3 lmc-bottominput" minlength="6" maxlength="20" placeholder="密码" required>
+            <div class="text-danger w-100 text-left small">
+                <div ng-messages="(login_form.username.$touched || login_form.username.$dirty) && login_form.username.$error" ng-messages-multiple>
+                    <div ng-message="required">必须填写帐号</div>
+                    <div ng-message="minlength">帐号最少需要3个字符</div>
+                    <div ng-message="maxlength">帐号最多只能有20个字符</div>
+                </div>
+                <div ng-messages="(login_form.password.$touched || login_form.password.$dirty) && login_form.password.$error" ng-messages-multiple>
+                    <div ng-message="required">必须填写密码</div>
+                    <div ng-message="minlength">帐号最少需要6个字符</div>
+                    <div ng-message="maxlength">帐号最多只能有20个字符</div>
+                </div>
+            </div>
+            <button ng-disabled="login_form.$invalid" ng-click="login()" class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
+        </form>
+        <form name="register_form" class="form-signin text-center" ng-if="!loginMode">
+            <h1 class="h3 mb-3 font-weight-normal">注册帐号</h1>
+            <label for="register_username" class="sr-only">帐号</label>
+            <input name="username" ng-model="registerData.username" type="text" id="register_username" class="form-control lmc-topinput" placeholder="帐号" minlength="3" maxlength="20" required autofocus>
+            <label for="register_password" class="sr-only">密码</label>
+            <input name="password" ng-model="registerData.password" type="password" id="register_password" class="form-control lmc-midinput" placeholder="密码" minlength="6" maxlength="20" required>
+            <label for="register_repassword" class="sr-only">重复密码</label>
+            <input name="repassword" ng-model="registerData.repassword" type="password" id="register_repassword" class="form-control mb-3 lmc-bottominput" placeholder="重复密码" minlength="6" maxlength="20" equals="registerData.password" required>
+            <div class="text-danger w-100 text-left small">
+                <div ng-messages="(register_form.username.$touched || register_form.username.$dirty) && register_form.username.$error" ng-messages-multiple>
+                    <div ng-message="required">必须填写帐号</div>
+                    <div ng-message="minlength">帐号最少需要3个字符</div>
+                    <div ng-message="maxlength">帐号最多只能有20个字符</div>
+                </div>
+                <div ng-messages="(register_form.password.$touched || register_form.password.$dirty) && register_form.password.$error" ng-messages-multiple>
+                    <div ng-message="required">必须填写密码</div>
+                    <div ng-message="minlength">帐号最少需要6个字符</div>
+                    <div ng-message="maxlength">帐号最多只能有20个字符</div>
+                </div>
+                <div ng-messages="(register_form.repassword.$touched || register_form.repassword.$dirty) && register_form.repassword.$error" ng-messages-multiple>
+                    <div ng-message="required">必须填写验证密码</div>
+                    <div ng-message="minlength">帐号最少需要6个字符</div>
+                    <div ng-message="maxlength">帐号最多只能有20个字符</div>
+                    <div ng-message="equals">两次输入密码不一致</div>
+                </div>
+            </div>
+            <button ng-disabled="register_form.$invalid" ng-click="register()" class="btn btn-lg btn-primary btn-block" type="submit">立即注册</button>
+        </form>
+        <a href="javascript:;" class="text-dark" ng-click="loginMode = !loginMode">{{loginMode?"没有帐号，我要注册":"已有帐号，直接登录"}}</a>
+    </div>
+</div>

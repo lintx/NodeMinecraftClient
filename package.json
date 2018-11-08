@@ -1,0 +1,11 @@
+{
+  "name": "NodeMinecraftClient",
+  "version": "1.0.0",
+  "dependencies": {
+    "express": "^4.16.4",
+    "minecraft-protocol": "^1.8.2",
+    "mysql": "^2.16.0",
+    "request": "^2.88.0",
+    "socket.io": "^2.1.1"
+  }
+}

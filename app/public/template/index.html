@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MC云服务</title>
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/dist/css/index.css">
+</head>
+<body ng-app="lmc" ng-controller="lmcCtrl">
+    <div ng-include="'/template/windows/lmc.html'"></div>
+    <div ng-include="'/template/windows/login.html'"></div>
+
+    <script src="/node_modules/jquery/jquery.min.js"></script>
+    <script src="/node_modules/popper.js/dist/umd/popper.min.js"></script>
+    <script src="/node_modules/moment/moment.js"></script>
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/node_modules/angular/angular.min.js"></script>
+    <script src="/node_modules/angular-messages/angular-messages.min.js"></script>
+    <script src="/node_modules/socket.io-client/dist/socket.io.js"></script>
+    <script src="/dist/js/index.js"></script>
+<script>
+    var socket = io();
+    socket.on('connect',function () {
+        console.log('fff')
+        socket.emit('mmm');
+    })
+    socket.on('mmm',function (m) {
+        console.log("mmm",m);
+    })
+    socket.on('message',function (message) {
+        console.log('onmessage',message);
+    })
+</script>
+</body>
+</html>

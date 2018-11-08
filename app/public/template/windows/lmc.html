@@ -1,0 +1,67 @@
+<div ng-if="isLogin">
+    <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top border-bottom">
+        <a class="navbar-brand" href="javascript:;">MC云服务</a>
+        <div class="d-md-none">
+            <button class="btn btn-outline-info">我的连接</button>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav  mr-auto flex-nowrap">
+                <li class="nav-item ng-hide">
+                    <a class="nav-link text-dark" href="javascript:;">我的连接</a>
+                </li>
+                <li class="nav-item text-dark p-1">
+                    玩家名已连接
+                </li>
+                <li class="nav-item text-dark p-1">
+                    生命值：
+                </li>
+                <li class="nav-item text-dark p-1">
+                    饥饿值：
+                </li>
+                <li class="nav-item text-dark p-1">
+                    饱食度：
+                </li>
+            </ul>
+            <div class="ml-2">
+                <button ng-click="showTime = !showTime" class="btn btn-outline-info">{{showTime?"隐藏日志时间":"显示日志时间"}}</button>
+                <button class="btn btn-outline-info">登录服务器</button>
+            </div>
+            <div class="d-none d-md-block ml-2">
+                <button class="btn btn-outline-info">我的连接</button>
+            </div>
+        </div>
+    </nav>
+    <div class="lmc-content">
+        <div class="lmc-content-warp">
+            <div class="lmc-defaultinfo">
+                <p>欢迎来到MC云服务</p>
+                <p>在这里你可以云挂机</p>
+                <p>云挂机目前支持的功能有：</p>
+                <p>1.登录服务器</p>
+                <p>2.死亡自动重生</p>
+                <p>3.掉线自动重连（只进行了初步测试）</p>
+                <p>4.自动钓鱼（只支持部分版本）</p>
+                <p>5.自动攻击（只支持部分版本）</p>
+                <p>由于挂机是在服务器上进行，所以所有用户是使用同一个IP登录，所以谨防被BAN IP，同时由于其他玩家的行为导致IP被BAN后无法登录概不负责</p>
+                <p>由于挂机是在服务器上进行，所以需要一个服务器运行程序，同时为了防止挂机泛滥，所以目前的策略是收费制，每条线路收费5元/月，每条线路可以使用一个帐号登录一个服务器，可以自己编辑帐号信息和需要连接的服务器</p>
+                <p>由于挂机是在服务器上进行，所以挂机是需要将游戏帐号密码发送到程序服务器的，虽然本人承诺不查任何帐号密码，但使用时还请做好帐号保护工作，如帐号被盗概不负责</p>
+                <p>---</p>
+            </div>
+            <div class="lmc-message">
+                <p ng-repeat="msg in message">
+                    <span ng-show="showTime" class="lmc-message-time">{{msg.time|int2date}} : </span>
+                    <span ng-if="msg.type==='error'" class="text-danger"> [错误信息] </span>
+                    <span ng-if="msg.type==='info'" class="text-info"> [提示信息] </span>
+                    <span ng-bind-html="msg.message|unsafe" ng-class="{'text-danger':msg.type=='error','text-info':msg.type=='info'}"></span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="fixed-bottom bg-dark lmc-chat">
+        <input placeholder="在这里输入文字或命令然后按回车以聊天或使用命令" />
+    </div>
+</div>

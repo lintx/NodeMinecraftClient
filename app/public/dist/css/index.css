@@ -1,0 +1,115 @@
+body{
+    background: #444444;
+}
+.navbar{
+}
+.lmc-content{
+    padding-top: 57px;
+    padding-bottom: 40px;
+    color: #D6D6D6;
+}
+.lmc-content-warp{
+    padding: 8px;
+}
+.lmc-content p{
+    margin-bottom: 0;
+}
+.lmc-message-time{
+    color: #888888;
+}
+.lmc-chat{
+    height: 40px;
+}
+.lmc-chat input{
+    background: transparent;
+    border: 0;
+    outline: 0;
+    padding: 0 8px;
+    color: #D6D6D6;
+    width: 100%;
+    height: 100%;
+}
+
+.lmc-content p .color-a { color: #50FF38; }
+.lmc-content p .color-b { color: #5BFFFF; }
+.lmc-content p .color-c { color: #EA3A3F; }
+.lmc-content p .color-d { color: #EF1DFF; }
+.lmc-content p .color-e { color: #FAFF34; }
+.lmc-content p .color-f { color: #EDEDED; }
+.lmc-content p .color-0 { color: #000000; }
+.lmc-content p .color-1 { color: #19009C; }
+.lmc-content p .color-2 { color: #30A000; }
+.lmc-content p .color-3 { color: #379C9A; }
+.lmc-content p .color-4 { color: #9A0000; }
+.lmc-content p .color-5 { color: #99009C; }
+.lmc-content p .color-6 { color: #EF9B00; }
+.lmc-content p .color-7 { color: #9A9A9A; }
+.lmc-content p .color-8 { color: #43443E; }
+.lmc-content p .color-9 { color: #412BFF; }
+
+.lmc-content p a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.lmc-content p a:hover {
+    color: inherit;
+}
+
+
+.lmc-login-warp{
+    background: #EDF0F1;
+    position: fixed;
+    overflow: hidden;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 99999;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex: 0 1 auto;
+    flex: 0 1 auto;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+.form-signin {
+    width: 320px;
+    padding: 15px;
+    margin: 0 auto;
+}
+.form-signin .checkbox {
+    font-weight: 400;
+}
+.form-signin .form-control {
+    position: relative;
+    box-sizing: border-box;
+    height: auto;
+    padding: 10px;
+    font-size: 16px;
+}
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+.form-signin .lmc-topinput {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.form-signin .lmc-midinput {
+    margin-bottom: -1px;
+    border-radius: 0;
+}
+.form-signin .lmc-bottominput {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}

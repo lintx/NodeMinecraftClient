@@ -1,0 +1,13 @@
+{
+  "name": "public",
+  "version": "1.0.0",
+  "dependencies": {
+    "angular": "^1.7.5",
+    "angular-messages": "^1.7.5",
+    "bootstrap": "^4.1.3",
+    "jquery": "^1.9.1",
+    "moment": "^2.22.2",
+    "popper.js": "^1.14.3",
+    "socket.io-client": "^2.1.1"
+  }
+}
