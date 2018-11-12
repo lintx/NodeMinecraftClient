@@ -60,12 +60,12 @@
         socket.on('disconnect',function () {
             $scope.$apply(function () {
                 $scope.isLogin = false;
-                $('modal').each(function(i,o){
-                    $scope.$apply(function () {
-                        $scope.closeModal(o.id);
-                    });
-                })
             });
+            $('modal').each(function(i,o){
+                $scope.$apply(function () {
+                    $scope.closeModal(o.id);
+                });
+            })
         });
         socket.on('onlogin',function () {
             $scope.$apply(function () {
