@@ -1,0 +1,52 @@
+/* MODAL STYLES
+-------------------------------*/
+modal {
+    /* modals are hidden by default */
+    display: none;
+}
+
+modal .lmc-modal {
+    /* modal container fixed across whole screen */
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    /* z-index must be higher than .modal-background */
+    z-index: 100000;
+
+    /* enables scrolling for tall modals */
+    overflow: auto;
+
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex: 0 1 auto;
+    flex: 0 1 auto;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: center;
+    justify-content: start;
+    background-color: rgba(0,0,0,0.75);
+}
+
+modal .lmc-modal .lmc-modal-warp {
+    padding: 40px;
+    max-width: 600px;
+}
+modal .lmc-modal .lmc-modal-warp .lmc-modal-body {
+    padding: 20px;
+    background: #fff;
+    /*border: 1px solid #dee2e6!important;*/
+    /*box-shadow: 0 0 3px #888888;*/
+}
+body.lmc-modal-open {
+    /* body overflow is hidden to hide main scrollbar when modal window is open */
+    overflow: hidden;
+}

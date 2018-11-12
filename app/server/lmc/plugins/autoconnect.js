@@ -1,3 +1,5 @@
+const AutoConnectModule = require('../../server/model/linkmodule').AutoConnectConfig;
+
 function bindEvent(client, autoconnect) {
     client.on('connect', function (packet) {
         autoconnect.isConnect = true;
@@ -17,12 +19,12 @@ function bindEvent(client, autoconnect) {
 }
 
 function runReConnect(client, autoconnect) {
-    if (autoconnect.open) {
+    if (autoconnect.config.open) {
         autoconnect.tryCount += 1;
-        if (autoconnect.tryCount <= autoconnect.tryMaxCount) {
+        if (autoconnect.tryCount <= autoconnect.config.tryMaxCount) {
             setTimeout(()=>{
                 tryReConnect(client,autoconnect);
-            },autoconnect.delay*1000);
+            },autoconnect.config.delay*1000);
         }
         else {
             client.emit('lmc:plugin',{plugin:'autoconnect',message:`第 ${autoconnect.tryCount} 次尝试重新连接后依然没有成功，尝试次数已达上限，停止尝试重新连接`});
@@ -40,13 +42,14 @@ function tryReConnect(client, autoconnect) {
 }
 
 class AutoConnect {
-    constructor(client){
+    constructor(client,config){
+        if (!(config instanceof AutoConnectModule)) {
+            config = new AutoConnectModule()
+        }
+        this.config = config;
         this.client = client;
         this.isConnect = false;
-        this.open = false;
-        this.tryMaxCount = 3;
         this.tryCount  = 0;
-        this.delay = 30;
 
         bindEvent(client,this);
     }

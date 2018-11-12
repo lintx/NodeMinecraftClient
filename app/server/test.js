@@ -10,10 +10,6 @@ const client = new lmc();
 //     username: "travis@sarbin.net",
 //     password: "k4t4t0n1k",
 // });
-client.autoconnect.open = true;
-client.autorevive.open = true;
-client.autoconnect.tryMaxCount = 30;
-client.autoconnect.delay = 3;
 client.on('message',(packet)=>{
     // console.log('message:',packet);
 });

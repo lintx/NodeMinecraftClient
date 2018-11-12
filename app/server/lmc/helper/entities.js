@@ -1,4 +1,4 @@
-const Position = require('../position');
+const Position = require('./position');
 const Mobs = require('minecraft-data')("1.13.2").mobs;
 
 function bindEvent(client, entities) {

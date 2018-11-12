@@ -1,12 +1,13 @@
 const mcp = require('minecraft-protocol');
-const Position = require('./position');
+const Position = require('./helper/position');
 const EventEmitter = require('events').EventEmitter;
-const AutoRevive = require('./plugins/autorevive');
+const AutoFevive = require('./plugins/autorevive');
 const Autofish = require('./plugins/autofish');
-const Inventory = require('./plugins/inventory');
-const Entities = require('./plugins/entities');
+const Inventory = require('./helper/inventory');
+const Entities = require('./helper/entities');
 const AutoAttack = require('./plugins/autoattack');
 const AutoConnect = require('./plugins/autoconnect');
+const AutoChat = require('./plugins/autochat');
 
 function bindEvent(client) {
     //记录玩家实体id
@@ -64,10 +65,18 @@ class LinTxMinecraftClient extends EventEmitter{
 
         this.inventory = new Inventory(this);
         this.entities = new Entities.Entities(this);
-        this.autofish = new Autofish(this,1,60);
-        this.autorevive = new AutoRevive(this);
+        this.autofish = new Autofish(this);
+        this.autofevive = new AutoFevive(this);
         this.autoattack = new AutoAttack(this);
         this.autoconnect = new AutoConnect(this);
+        this.autochat = new AutoChat(this);
+    }
+
+    end(){
+        if (this._client) {
+            this._client.end();
+            this._client = null;
+        }
     }
 
     connect (option) {
@@ -78,15 +87,22 @@ class LinTxMinecraftClient extends EventEmitter{
         else {
             self.option = option;
         }
+        if (!option.username || !option.host || !option.port) {
+            this.emit('lmc:error',{message:'用户名或服务器地址或服务器端口为空，无法连接'});
+            return;
+        }
         if (option.password === null) {
             self.username = option.username;
+        }
+        if (this._client) {
+            this.end();
         }
         self._client = mcp.createClient(option);
 
         var oldEmit = self._client.emit;
         self._client.emit = function (event) {
             var args = Array.prototype.slice.call(arguments,1),newArgs = [event].concat(args);
-            oldEmit.apply(self._client,newArgs);
+            if (self._client) oldEmit.apply(self._client,newArgs);
             self.emit.apply(self,newArgs);
 
             // console.log("event:",event,args);

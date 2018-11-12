@@ -20,6 +20,10 @@ body{
 .lmc-chat{
     height: 40px;
 }
+.lmc-chat form{
+    width: 100%;
+    height: 100%;
+}
 .lmc-chat input{
     background: transparent;
     border: 0;
@@ -112,4 +116,7 @@ body{
     margin-bottom: 10px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+}
+.notyf{
+    z-index: 199999;
 }

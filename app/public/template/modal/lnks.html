@@ -1,0 +1,34 @@
+<modal id="my_links" background-close="1">
+    <div class="lmc-modal">
+        <div class="lmc-modal-warp">
+            <div class="lmc-modal-body">
+                <h2 class="text-center">我的连接</h2>
+                <table class="table" ng-if="links.length>0">
+                    <thead>
+                    <tr>
+                        <td>ID</td>
+                        <td>创建时间</td>
+                        <td>到期时间</td>
+                        <td>操作</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="link in links">
+                        <td>{{link.id}}</td>
+                        <td>{{link.create_time*1000|int2date}}</td>
+                        <td>{{link.end_time*1000|int2date}}</td>
+                        <td><a href="javascript:;" ng-click="selectlink(link)">进入</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <p ng-if="!links || links.length==0" class="text-center">
+                    你还没有连接，快联系管理员创建连接吧！
+                </p>
+                <hr>
+                <div class="text-right">
+                    <button class="btn btn-info" ng-click="closeModal('my_links');">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</modal>

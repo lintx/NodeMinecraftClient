@@ -3,23 +3,22 @@ var socketio = require('socket.io');
 var http = require('http');
 var path = require('path');
 var config = require('../config/config');
+require('./server/db');
+require('./server/loadallclient');
 
 var app = express();
 var server = http.createServer(app);
 var io = socketio(server,{
     pingTimeout: 6000//6秒接收不到客户端消息则断开连接
 });
-const allClients = {};
-
 // require('./test');
 
 
-const socketIds = [];
 //服务器重新启动时应该读取links并建立client
 //延长时间时应检测client是否存在，存在则增加时间，不存在时需要用户重新登录并选择这个link后自动建立client
 
 io.on('connect',function (socket) {
-    require('./server')(socket,allClients);
+    require('./server')(socket);
     //早这里给socket绑定事件，以区分？
     // if (socketIds.indexOf(a.id) < 0) {
     //     socketIds.push(a.id);

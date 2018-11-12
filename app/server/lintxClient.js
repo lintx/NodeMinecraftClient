@@ -1,5 +1,5 @@
 var mcp = require('minecraft-protocol');
-var Position = require('./lmc/position');
+var Position = require('./lmc/helper/position');
 
 // function Health(health, food) {
 //     this.health = health;

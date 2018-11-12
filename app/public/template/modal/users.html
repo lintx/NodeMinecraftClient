@@ -1,0 +1,130 @@
+<modal id="modal_users" background-close="0">
+    <div class="lmc-modal">
+        <div class="lmc-modal-warp">
+            <div class="lmc-modal-body">
+                <h2 class="text-center">用户列表</h2>
+                <hr>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" ng-model="manage.username" placeholder="输入用户名" aria-label="输入用户名" aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" ng-click="manage_searchuser()" type="button">搜索</button>
+                    </div>
+                </div>
+                <table class="table" ng-if="manage.userlist.length>0">
+                    <thead>
+                    <tr>
+                        <!--<td>UID</td>-->
+                        <td>用户名</td>
+                        <!--<td>状态</td>-->
+                        <td>连接数</td>
+                        <td>操作</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="user in manage.userlist">
+                        <!--<td>{{user.id}}</td>-->
+                        <td>{{user.username}}</td>
+                        <!--<td><a href="javascript:;" ng-click="manage_setstatus(user)">{{user.status==0?'有效':'无效'}}</a></td>-->
+                        <td><a href="javascript:;" ng-click="manage_showlinks(user)">{{user.linkcount}}</a></td>
+                        <td><a href="javascript:;" ng-click="manage_changepassword(user)">修改密码</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <p ng-if="manage.userlist.length==0" class="text-center">
+                    没有找到符合条件的用户
+                </p>
+                <hr>
+                <div class="text-right">
+                    <button class="btn btn-info" ng-click="closeModal('modal_users');">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</modal>
+<modal id="modal_users_changepassword" background-close="0">
+    <div class="lmc-modal">
+        <div class="lmc-modal-warp">
+            <div class="lmc-modal-body">
+                <h2 class="text-center">修改用户密码</h2>
+                <hr>
+                <p>修改用户{{manage.user.username}}的密码</p>
+                <input type="password" class="form-control mb-3" ng-model="manage.changepassword.old" placeholder="输入新密码" aria-describedby="basic-addon2">
+                <input type="password" class="form-control" ng-model="manage.changepassword.new" placeholder="验证新密码" aria-describedby="basic-addon2">
+                <hr>
+                <div class="text-right">
+                    <button class="btn btn-info" ng-click="mange_dochangepassword()">确定</button>
+                    <button class="btn btn-info" ng-click="closeModal('modal_users_changepassword');">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</modal>
+<modal id="modal_users_links_manage" background-close="0">
+    <div class="lmc-modal">
+        <div class="lmc-modal-warp">
+            <div class="lmc-modal-body">
+                <h2 class="text-center">用户的连接</h2>
+                <hr>
+                <p>管理用户{{manage.user.username}}的连接</p>
+                <table class="table" ng-if="manage.userlinks.length>0">
+                    <thead>
+                    <tr>
+                        <td>ID</td>
+                        <td>到期时间</td>
+                        <td>操作</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="link in manage.userlinks">
+                        <td>{{link.id}}#</td>
+                        <td>{{link.end_time*1000|int2date}}</td>
+                        <td><a href="javascript:;" ng-click="mange_editlink(link)">延期</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <hr>
+                <div class="text-right">
+                    <button class="btn btn-info" ng-click="mange_addlink()">添加</button>
+                    <button class="btn btn-info" ng-click="closeModal('modal_users_links_manage');">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</modal>
+<modal id="modal_users_links_manage_edit" background-close="0">
+    <div class="lmc-modal">
+        <div class="lmc-modal-warp">
+            <div class="lmc-modal-body">
+                <h2 class="text-center">用户的连接</h2>
+                <hr>
+                <p>延长用户{{manage.user.username}}的{{manage.changelink.id}}#连接</p>
+                <p>原到期时间：{{manage.changelink.end_time*1000|int2date}}</p>
+                <p>请输入需要延长的天数</p>
+                <input type="number" class="form-control mb-3" ng-model="manage.linkday" placeholder="请输入延长的天数" aria-describedby="basic-addon2">
+                <hr>
+                <div class="text-right">
+                    <button class="btn btn-info" ng-click="mange_doeditlink()">确定</button>
+                    <button class="btn btn-info" ng-click="closeModal('modal_users_links_manage_edit');">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</modal>
+<modal id="modal_users_links_manage_add" background-close="0">
+    <div class="lmc-modal">
+        <div class="lmc-modal-warp">
+            <div class="lmc-modal-body">
+                <h2 class="text-center">用户的连接</h2>
+                <hr>
+                <p>新增用户{{manage.user.username}}的连接</p>
+                <p>请输入新增连接的可用天数</p>
+                <input type="number" class="form-control mb-3" ng-model="manage.linkday" placeholder="请输入新增的天数" aria-describedby="basic-addon2">
+                <hr>
+                <div class="text-right">
+                    <button class="btn btn-info" ng-click="mange_doaddlink()">确定</button>
+                    <button class="btn btn-info" ng-click="closeModal('modal_users_links_manage_add');">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</modal>

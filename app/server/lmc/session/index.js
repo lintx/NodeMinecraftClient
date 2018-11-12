@@ -28,7 +28,6 @@ function login(option) {
             data.token = body.accessToken;
             data.name = body.selectedProfile.name;
             data.id = body.selectedProfile.id;
-            console.log(data);
         }
         // console.log(err);
         // console.log(response)

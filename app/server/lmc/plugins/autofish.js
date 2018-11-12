@@ -1,4 +1,5 @@
-var Position = require('../position');
+const Position = require('../helper/position');
+const AutoModule = require('../../server/model/linkmodule').AutoFishConfig;
 
 //fishing_rod itemId:
 //1.13.1-1.13.2:568
@@ -6,15 +7,16 @@ var Position = require('../position');
 //1.8-1.12:346
 
 class AutoFish {
-    constructor(client,delay,timeout){
-        this.open = false;
+    constructor(client,config){
+        if (!(config instanceof AutoModule)) {
+            config = new AutoModule()
+        }
+        this.config = config;
         this.fishing = false;
         this.teleportIds = [];
         this.spawnId = 0;
         this.fishEntityId = 0;
         this.client = client;
-        this.delay = delay;
-        this.timeout = timeout;
         this.lastUseTime = 0;
         this.checkEntity = false;
 
@@ -25,14 +27,14 @@ class AutoFish {
                 var time = Date.now();
                 if (canFish()) {
                     if (self.fishing) {
-                        if (self.timeout > 0 && time - self.lastUseTime > self.timeout*1000) {
+                        if (self.config.timeout > 0 && time - self.lastUseTime > self.config.timeout*1000) {
                             //检测到超过时间依然在钓鱼，收杆
-                            self.client.emit('lmc:plugin',{plugin:'autofish',message:`检测到超过时间(${self.timeout})依然在钓鱼，收杆并重新抛竿`});
+                            self.client.emit('lmc:plugin',{plugin:'autofish',message:`检测到超过时间(${self.config.timeout})依然在钓鱼，收杆并重新抛竿`});
                             use_fish_rod();
                         }
                     }
                     else {
-                        if (time - self.lastUseTime > self.delay*1000) {
+                        if (time - self.lastUseTime > self.config.delay*1000) {
                             // self.client.emit('lmc:plugin',{plugin:'autofish',message:`检测到超过时间(${self.delay})没有在钓鱼，重新抛竿`});
                             //检测到超过时间没有在钓鱼，开始钓鱼
                             use_fish_rod();
@@ -105,7 +107,7 @@ class AutoFish {
                 client.write('use_item',{hand:0});
             }
             function canFish() {
-                if (!self.open) return false;
+                if (!self.config.open) return false;
                 if (self.client.inventory.getHeldItem().id === 568) {
                     return true;
                 }
@@ -125,30 +127,14 @@ class AutoFish {
         bindEvent();
     }
 
-    set delay(delay){
-        this._delay = (delay !== undefined) ? delay : 1;
-    }
-
-    get delay(){
-        return this._delay;
-    }
-
-    set timeout(timeout){
-        this._timeout = (timeout !== undefined) ? timeout : 60;
-    }
-
-    get timeout(){
-        return this._timeout;
-    }
-
     start (){
         this.client.emit('lmc:plugin',{plugin:'autofish',message:'开始自动钓鱼'});
-        this.open = true;
+        this.config.open = true;
     }
 
     stop (){
         this.client.emit('lmc:plugin',{plugin:'autofish',message:'停止自动钓鱼'});
-        this.open = false;
+        this.config.open = false;
     }
 }
 module.exports = AutoFish;

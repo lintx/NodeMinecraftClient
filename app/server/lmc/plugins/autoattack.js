@@ -1,18 +1,20 @@
-const Entities = require('./entities');
+const Entities = require('../helper/entities');
+const AutoAttackModule = require('../../server/model/linkmodule').AutoAttackConfig;
 
 function bindEvent(client, autoattack) {
     client.on('update_time',function (packet) {
-        if (autoattack.open) {
+        if (autoattack.config.open) {
             autoattack.autoAttack();
         }
     });
 }
 
 class AutoAttack {
-    constructor(client){
-        this.open = false;
-        this.yaw = 120;
-        this.dist = 3;
+    constructor(client,config){
+        if (!(config instanceof AutoAttackModule)) {
+            config = new AutoAttackModule()
+        }
+        this.config = config;
         this.client = client;
 
         bindEvent(client,this);
@@ -31,10 +33,7 @@ class AutoAttack {
         }
     }
 
-    autoAttack(yaw,dist){
-        this.yaw = yaw || this.yaw;
-        this.dist = dist || this.dist;
-
+    autoAttack(){
         let best;
         let bestDist;
         let id;
@@ -45,9 +44,9 @@ class AutoAttack {
             let eyaw = entity.calcYaw(self.client.position);
             let i = Math.abs(eyaw - self.client.position.yaw);
             i = i > 180 ? 360 - i : i;
-            if (i <= self.yaw / 2) {
+            if (i <= self.config.yaw / 2) {
                 let dist = entity.position.distanceTo(self.client.position);
-                if ((self.dist <= 0 || (self.dist > 0 && dist <= self.dist)) && ( !best || dist < bestDist)) {
+                if ((self.config.dist <= 0 || (self.config.dist > 0 && dist <= self.config.dist)) && ( !best || dist < bestDist)) {
                     best = entity;
                     bestDist = dist;
                 }
@@ -85,14 +84,14 @@ class AutoAttack {
     }
 
     start (){
-        this.client.emit('lmc:plugin',{plugin:'autoattack',message:`开始自动攻击，攻击角度：${this.yaw}，攻击距离：${this.dist}`});
+        this.client.emit('lmc:plugin',{plugin:'autoattack',message:`开始自动攻击，攻击角度：${this.config.yaw}，攻击距离：${this.config.dist}`});
         this.autoSelectSword();
-        this.open = true;
+        this.config.open = true;
     }
 
     stop (){
         this.client.emit('lmc:plugin',{plugin:'autoattack',message:'停止自动攻击'});
-        this.open = false;
+        this.config.open = false;
     }
 }
 

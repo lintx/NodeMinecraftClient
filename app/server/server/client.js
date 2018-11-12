@@ -1,5 +1,5 @@
 const LClient = require('../lmc');
-const LinkModule = require('./linkmodule');
+const LinkModule = require('./model/linkmodule');
 const EventEmitter = require('events').EventEmitter;
 
 const MessageType = {
@@ -7,7 +7,7 @@ const MessageType = {
     chat : "chat",
     info : "info"
 };
-const buffTimeout = 6*60*60*1000;
+const maxbuff = 1000;
 
 function bindEvent(client) {
     var bot = client.client;
@@ -77,12 +77,9 @@ function bindEvent(client) {
     bot.on('update_time',autoRemove);
 
     function autoRemove() {
-        if (buffer.length > 0) {
-            let message = buffer[0];
-            if (message.time + buffTimeout < Date.now()) {
-                buffer.shift();
-                autoRemove();
-            }
+        if (buffer.length > maxbuff) {
+            buffer.shift();
+            autoRemove();
         }
     }
 }
@@ -127,12 +124,12 @@ function parseVanilla(jsonMsg) {
             return `§${color}[${sender}: ${msg}]`;
         case 'death.attack.mob':
             victim      = jsonMsg.with[0].text;
-            killer      = jsonMsg.with[1].text;
+            killer      = jsonMsg.with[1].translate;
             return `§${color}${victim} 被 ${killer} 杀死了`;
         case 'death.attack.arrow':
             victim      = jsonMsg.with[0].text;
-            killer      = jsonMsg.with[1].text;
-            return `§${color}${victim} 被 ${killer} 杀死了`;
+            killer      = jsonMsg.with[1].translate;
+            return `§${color}${victim} 被 ${killer} 射杀`;
         case 'death.attack.player':
             victim      = jsonMsg.with[0].text;
             killer      = jsonMsg.with[1].text;
@@ -145,11 +142,24 @@ function parseVanilla(jsonMsg) {
             player      = jsonMsg.with[0].text;
             achievement = parseAchievement(jsonMsg.with[1].extra[0].translate);
             return `§${color}${player} 刚刚取得了成就 §a[${achievement}]`;
+        case 'chat.type.emote':
+            player      = jsonMsg.with[0].text;
+            msg         = jsonMsg.with[1];
+            return `§${color}* ${player} ${msg}`;
+        case 'commands.message.display.incoming':
+            player      = jsonMsg.with[0].text;
+            msg         = jsonMsg.with[1].text;
+            return`§${color}${player}悄悄地对你说:${msg}`;
+        case 'commands.message.display.outgoing':
+            player      = jsonMsg.with[0].text;
+            msg         = jsonMsg.with[1].text;
+            return`§${color}你悄悄地对${player}说:${msg}`;
     }
 
     if (/^commands\..*usage$/.test(jsonMsg.translate)) {
         return '§' + color + parseCommandUsage(jsonMsg.translate);
     }
+    return `§${color}未能解析的消息`;
 }
 function parseExtra(extra) {
     let string = '';
@@ -388,19 +398,59 @@ function emitMessage(socket,msg) {
 class Client extends EventEmitter{
     constructor(config){
         super(config);
-        if (!(config instanceof LinkModule.LinkModule)) config = new LinkModule.LinkModule();
-        this.config = config;
-        this.message = [];
-        this.clientSocket = null;
+        this.config = {};
         this.tempMessage = [];
+        this.message = [];
 
-        this.client = new LClient(config.config);
+        this.client = null;
+
+        this.updateConfig(config);
 
         bindEvent(this);
+    }
 
-        if (config.config.autologin) {
-            this.client.connect();
+    updateConfig(config){
+        if (!(config instanceof LinkModule.LinkModule)) config = new LinkModule.LinkModule();
+
+        if (this.client === null) {
+            let user = config.config.userConfig;
+            this.client = new LClient(user);
+            upClientConfig(this.client);
+            if (user.islogin && user.username && user.host && user.port) {
+                this.client.connect();
+            }
         }
+        else {
+            //重新登录
+            let oldUser = this.config.config.userConfig;
+            let newUser = config.config.userConfig;
+            if (newUser.islogin && newUser.username && newUser.host && newUser.port && (oldUser.username !== newUser.username || oldUser.host !== newUser.host || oldUser.port !== newUser.port)) {
+                this.client.end();
+                upClientConfig(this.client);
+                this.client.connect(newUser);
+            }
+            else {
+                upClientConfig(this.client);
+            }
+        }
+
+        this.config = config;
+
+        function upClientConfig(client) {
+            client.autoattack.config = config.config.pluginConfig.autoattack;
+            client.autochat.updateConfig(config.config.pluginConfig.autochat);
+            client.autoconnect.config = config.config.pluginConfig.autoconnect;
+            client.autofish.config = config.config.pluginConfig.autofish;
+            client.autofevive.config = config.config.pluginConfig.autofevive;
+        }
+    }
+
+    logout(){
+        this.client && this.client.end();
+    }
+
+    login(){
+        this.client && this.client.connect();
     }
 
     setClientSocket(socket){
@@ -435,10 +485,6 @@ class Client extends EventEmitter{
         this.clientSocket = null;
         this.removeListener('message',this.messageListen);
         this.removeListener('update_health',this.healthListen);
-    }
-
-    updateConfig(config){
-
     }
 }
 

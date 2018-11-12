@@ -27,11 +27,13 @@
                 </li>
             </ul>
             <div class="ml-2">
+                <button ng-if="isAdmin" ng-click="openModal('modal_users')" class="btn btn-outline-info">用户管理</button>
                 <button ng-click="showTime = !showTime" class="btn btn-outline-info">{{showTime?"隐藏日志时间":"显示日志时间"}}</button>
-                <button class="btn btn-outline-info">登录服务器</button>
+                <button ng-click="loginAndLogout()" class="btn btn-outline-info">{{select_link.userConfig.islogin?'登出服务器':'登录服务器'}}</button>
             </div>
             <div class="d-none d-md-block ml-2">
-                <button class="btn btn-outline-info">我的连接</button>
+                <button class="btn btn-outline-info" ng-click="link_setting()">连接设置</button>
+                <button class="btn btn-outline-info" ng-click="openModal('my_links')">我的连接</button>
             </div>
         </div>
     </nav>
@@ -46,9 +48,10 @@
                 <p>3.掉线自动重连（只进行了初步测试）</p>
                 <p>4.自动钓鱼（只支持部分版本）</p>
                 <p>5.自动攻击（只支持部分版本）</p>
+                <p>6.自动喊话（包括命令）</p>
                 <p>由于挂机是在服务器上进行，所以所有用户是使用同一个IP登录，所以谨防被BAN IP，同时由于其他玩家的行为导致IP被BAN后无法登录概不负责</p>
                 <p>由于挂机是在服务器上进行，所以需要一个服务器运行程序，同时为了防止挂机泛滥，所以目前的策略是收费制，每条线路收费5元/月，每条线路可以使用一个帐号登录一个服务器，可以自己编辑帐号信息和需要连接的服务器</p>
-                <p>由于挂机是在服务器上进行，所以挂机是需要将游戏帐号密码发送到程序服务器的，虽然本人承诺不查任何帐号密码，但使用时还请做好帐号保护工作，如帐号被盗概不负责</p>
+                <p>由于挂机是在服务器上进行，所以挂机是需要将游戏帐号密码发送到程序服务器的，虽然服务器对每个密码都使用了不同的密钥进行加密，且本人承诺不查任何帐号密码，但使用时还请做好帐号保护工作，如帐号被盗概不负责</p>
                 <p>---</p>
             </div>
             <div class="lmc-message">
@@ -62,6 +65,9 @@
         </div>
     </div>
     <div class="fixed-bottom bg-dark lmc-chat">
-        <input placeholder="在这里输入文字或命令然后按回车以聊天或使用命令" />
+        <form ng-submit="onchat()">
+            <input ng-model="chat.message" placeholder="在这里输入文字或命令然后按回车以聊天或使用命令" />
+            <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
+        </form>
     </div>
 </div>
