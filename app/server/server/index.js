@@ -54,6 +54,7 @@ module.exports = (socket)=>{
         }
         db.query('select * from `user` where `username`=?',[username],(err,result)=>{
             if (err){
+                console.log(err);
                 return error('登录失败，请重试[code=1]');
             }
             if (!result || result.length===0) {
@@ -71,7 +72,6 @@ module.exports = (socket)=>{
 
             db.query('select id,create_time,end_time,config from link where `user_id`=?',[userId],(err,result)=>{
                 if (err){
-                    console.log(err);
                     return error('查询连接失败，请刷新重试[code=1]');
                 }
                 let links = [];
