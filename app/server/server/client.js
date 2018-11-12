@@ -36,7 +36,7 @@ function bindEvent(client) {
             text = parseExtra(jsonMsg.extra);
         }
         else if (jsonMsg.text) {
-            text = message.text;
+            text = jsonMsg.text;
         }
         else if (jsonMsg.translate) {
             text = parseVanilla(jsonMsg);

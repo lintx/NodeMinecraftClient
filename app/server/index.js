@@ -19,18 +19,6 @@ var io = socketio(server,{
 
 io.on('connect',function (socket) {
     require('./server')(socket);
-    //早这里给socket绑定事件，以区分？
-    // if (socketIds.indexOf(a.id) < 0) {
-    //     socketIds.push(a.id);
-    //     console.log('now ids:',socketIds);
-    //     io.to(a.id).emit('message',{test:1});
-    //     let first= io.sockets.sockets[socketIds[0]];
-    //     console.log('first socket:',first ? first.id : "null");
-    // }
-    //     let firstId = a.id;
-    //     a.on('disconnect',(packet)=>{
-    //         console.log("disconnect,first.id",firstId);
-    //     });
 });
 
 
