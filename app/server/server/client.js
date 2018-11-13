@@ -491,7 +491,7 @@ class Client extends EventEmitter{
     }
 
     login(){
-        this.client && this.client.connect();
+        this.client && this.client.connect(this.config.config.userConfig);
     }
 
     setClientSocket(socket){

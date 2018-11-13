@@ -184,7 +184,6 @@
                     if (link.id === config.id) {
                         $scope.links[index] = config;
                         $scope.select_link = $scope.links[index].config;
-                        console.log(config,link,index,$scope.links[index],$scope.select_link)
                     }
                 });
             });
