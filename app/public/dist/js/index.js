@@ -35,7 +35,7 @@
         };
     }]).filter('int2date',function () {
         return function (val) {
-            return moment(val).format('YYYY-MM-DD HH:mm');
+            return moment(val).format('YYYY-MM-DD HH:mm:ss');
         }
     });
     function lmcCtrl($scope,ModalService) {
@@ -47,6 +47,10 @@
         $scope.link_id = 0;
         $scope.chat = {message:""};
         $scope.message = [];
+        $scope.health = {health: 0, food: 0, foodSaturation: 0};
+        $scope.status = {
+            username:''
+        };
         socket.on('message',function (message) {
             $scope.$apply(function () {
                 $scope.message.push(message);
@@ -60,16 +64,37 @@
         socket.on('disconnect',function () {
             $scope.$apply(function () {
                 $scope.isLogin = false;
+                $scope.message = [];
             });
             $('modal').each(function(i,o){
                 $scope.$apply(function () {
                     $scope.closeModal(o.id);
                 });
-            })
+            });
+        });
+        socket.on('update_health',function (health) {
+            $scope.$apply(function () {
+                $scope.health.health = health.health;
+                $scope.health.food = health.food;
+                $scope.health.foodSaturation = health.foodSaturation;
+            });
         });
         socket.on('onlogin',function () {
             $scope.$apply(function () {
                 $scope.isLogin = true;
+            });
+        });
+        socket.on('connectStatus',function (status) {
+            $scope.$apply(function () {
+                if ($scope.select_link && $scope.select_link.userConfig) {
+                    $scope.select_link.userConfig.islogin = status;
+                }
+            });
+        });
+        socket.on('mclogin',function (data) {
+            $scope.$apply(function () {
+                // $scope.isLogin = status;
+                $scope.status.username = data.username;
             });
         });
         socket.on('links',function (links) {
@@ -124,12 +149,12 @@
             else {
                 socket.emit('mclogin');
             }
-            $scope.links.forEach(function (link) {
-                if (link.id === $scope.link_id) {
-                    link.config.userConfig.islogin = !link.config.userConfig.islogin;
-                    $scope.select_link = link.config;
-                }
-            });
+            // $scope.links.forEach(function (link) {
+            //     if (link.id === $scope.link_id) {
+            //         link.config.userConfig.islogin = !link.config.userConfig.islogin;
+            //         $scope.select_link = link.config;
+            //     }
+            // });
         };
         /**
          * 以下为link设置
@@ -153,6 +178,17 @@
             socket.emit('config',$scope.setting_link);
             $scope.closeModal('my_links_setting');
         };
+        socket.on('config',function (config) {
+            $scope.$apply(function () {
+                $scope.links.forEach(function (link,index) {
+                    if (link.id === config.id) {
+                        $scope.links[index] = config;
+                        $scope.select_link = $scope.links[index].config;
+                        console.log(config,link,index,$scope.links[index],$scope.select_link)
+                    }
+                });
+            });
+        });
 
         $scope.openModal = function(id){
             if ($scope.isLogin === false) {

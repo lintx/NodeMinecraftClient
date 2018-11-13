@@ -11,9 +11,7 @@ function bindEvent(client, autoattack) {
 
 class AutoAttack {
     constructor(client,config){
-        if (!(config instanceof AutoAttackModule)) {
-            config = new AutoAttackModule()
-        }
+        this._config = new AutoAttackModule();
         this.config = config;
         this.client = client;
 
@@ -64,6 +62,9 @@ class AutoAttack {
      */
     autoSelectSword(){
         const self = this;
+        if (!this.client || !this.client.version || this.client.version.version <= 393) {
+            return;
+        }
         var items = self.client.inventory.getHeldItems();
         let bestSwordSlot = -1;
         let bestSword = -1;
@@ -81,6 +82,20 @@ class AutoAttack {
             self.client.emit('lmc:plugin',{plugin:'autoattack',message:'检测到更好的武器，切换武器'});
             self.client.inventory.setHeldItem(bestSwordSlot);
         }
+    }
+
+    set config(_config){
+        if (!(_config instanceof AutoAttackModule)) {
+            _config = new AutoAttackModule()
+        }
+        if ((!this._config || !this._config.open) && _config.open){
+            this.autoSelectSword();
+        }
+        this._config = _config;
+    }
+
+    get config(){
+        return this._config;
     }
 
     start (){

@@ -1,5 +1,6 @@
 body{
     background: #444444;
+    word-break: break-all;
 }
 .navbar{
 }
@@ -119,4 +120,5 @@ body{
 }
 .notyf{
     z-index: 199999;
+    min-width: 300px;
 }

@@ -15,6 +15,6 @@ db.query('select * from link where `end_time`>?',[time],(err,result)=>{
             });
             //这里要保存到数据库？
         });
-        allClients[module.id] = client;
+        global.allClients[module.id] = client;
     });
 });

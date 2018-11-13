@@ -13,6 +13,7 @@ function bindEvent(client) {
     //记录玩家实体id
     client.on('login', function(packet) {
         client.playerEntityId = packet.entityId;
+        client.username = client._client.username;
     });
 
     //记录玩家坐标
@@ -28,23 +29,6 @@ function bindEvent(client) {
         // console.log("session:",session,client._client)
         //这里要发通知让服务器存储session，以便下次使用，登录时如果有session应传入，会自动优先使用session
     });
-
-    if (client._client && client._client.wait_connect) {
-        next();
-    }
-    else {
-        client.once('connect_allowed',next);
-    }
-
-    function next() {
-        const version = require('minecraft-data')(client._client.version).version;
-        if (client.supportVersion.indexOf(version.majorVersion) === -1) {
-            client.emit('lmc:error',{message:'不支持的服务器版本'});
-            return;
-        }
-        client.version = version;
-        // console.log('version:',version,client._client.version)
-    }
 }
 
 class LinTxMinecraftClient extends EventEmitter{
@@ -94,6 +78,16 @@ class LinTxMinecraftClient extends EventEmitter{
         if (option.password === null) {
             self.username = option.username;
         }
+
+        if (option.version) {
+            const version = require('minecraft-data')(option.version).version;
+            if (self.supportVersion.indexOf(version.majorVersion) === -1) {
+                self.emit('lmc:error',{message:'不支持的服务器版本'});
+                return;
+            }
+            self.version = version;
+        }
+
         if (this._client) {
             this.end();
         }
@@ -103,10 +97,26 @@ class LinTxMinecraftClient extends EventEmitter{
         self._client.emit = function (event) {
             var args = Array.prototype.slice.call(arguments,1),newArgs = [event].concat(args);
             if (self._client) oldEmit.apply(self._client,newArgs);
-            self.emit.apply(self,newArgs);
-
-            // console.log("event:",event,args);
+            if (event.indexOf('raw') === -1) {
+                self.emit.apply(self,newArgs);
+            }
         };
+        if (self._client && self._client.wait_connect) {
+            next();
+        }
+        else {
+            self.once('connect_allowed',next);
+        }
+
+        function next() {
+            const version = require('minecraft-data')(self._client.version).version;
+            if (self.supportVersion.indexOf(version.majorVersion) === -1) {
+                self.emit('lmc:error',{message:'不支持的服务器版本'});
+                return;
+            }
+            self.version = version;
+            // console.log('version:',version,client._client.version)
+        }
     }
 
     write (name,data) {

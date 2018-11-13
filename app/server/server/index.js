@@ -79,9 +79,7 @@ module.exports = (socket)=>{
                     let temp = new LinkModule.LinkModule(link);
                     temp.config.userConfig.password = "";
                     links.push(temp);
-                    if (!linkConfigs[link.id]) {
-                        linkConfigs[link.id] = new LinkModule.LinkModule(link);
-                    }
+                    linkConfigs[link.id] = new LinkModule.LinkModule(link);
                 });
                 socket.emit('links',links);
             });
@@ -140,6 +138,7 @@ module.exports = (socket)=>{
             error('无效的连接');
             return;
         }
+        socket.emit('link',id);
         let client = getClient();
         if (client){
             client.unloadClientSocket();
@@ -149,7 +148,6 @@ module.exports = (socket)=>{
         if (client){
             client.setClientSocket(socket);
         }
-        socket.emit('link',id);
         //登录成功后绑定client/建立client，建立client时应该绑定session事件以便更新session，然后记录linkid，以便
     });
 
@@ -180,10 +178,20 @@ module.exports = (socket)=>{
         newConfig.id = oldConfig.id;
         newConfig.create_time = oldConfig.create_time;
         newConfig.end_time = oldConfig.end_time;
+        linkConfigs[linkId] = newConfig;
         db.query('update `link` set config=? where `id`=?',[newConfig.getDbData().config,linkId],(err,result)=>{
             if (err) {
                 return error('保存失败');
             }
+            db.query('select id,create_time,end_time,config from link where `id`=?',[linkId],(err,result)=>{
+                if (err){
+                    return;
+                }
+                let temp = new LinkModule.LinkModule(result[0]);
+                temp.config.userConfig.password = "";
+                linkConfigs[temp.id] = temp;
+                socket.emit('config',temp);
+            });
         });
         let client = getClient();
         if (client){
@@ -197,6 +205,7 @@ module.exports = (socket)=>{
             client.login();
             let config = linkConfigs[linkId];
             config.config.userConfig.islogin = true;
+            client.updateConfig(config);
             db.query('update `link` set config=? where `id`=?',[config.getDbData().config,linkId],(err,result)=>{
 
             });
@@ -209,6 +218,7 @@ module.exports = (socket)=>{
             client.logout();
             let config = linkConfigs[linkId];
             config.config.userConfig.islogin = false;
+            client.updateConfig(config);
             db.query('update `link` set config=? where `id`=?',[config.getDbData().config,linkId],(err,result)=>{
 
             });
@@ -297,7 +307,7 @@ module.exports = (socket)=>{
             }
         });
     });
-    socket.on('admin:changelink',(user_id,time)=>{
+    socket.on('admin:addlink',(user_id,time)=>{
         if (!isAdmin()) {
             return error('你不是管理员');
         }

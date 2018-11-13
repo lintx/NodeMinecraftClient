@@ -8,9 +8,7 @@ const AutoModule = require('../../server/model/linkmodule').AutoFishConfig;
 
 class AutoFish {
     constructor(client,config){
-        if (!(config instanceof AutoModule)) {
-            config = new AutoModule()
-        }
+        this._config = new AutoModule();
         this.config = config;
         this.fishing = false;
         this.teleportIds = [];
@@ -25,10 +23,11 @@ class AutoFish {
         function bindEvent() {
             client.on('update_time',function (packet) {
                 var time = Date.now();
-                if (canFish()) {
+                if (self.config.open) {
                     if (self.fishing) {
                         if (self.config.timeout > 0 && time - self.lastUseTime > self.config.timeout*1000) {
                             //检测到超过时间依然在钓鱼，收杆
+                            self.fishing = true;
                             self.client.emit('lmc:plugin',{plugin:'autofish',message:`检测到超过时间(${self.config.timeout})依然在钓鱼，收杆并重新抛竿`});
                             use_fish_rod();
                         }
@@ -49,24 +48,31 @@ class AutoFish {
             });
 
             client.on('spawn_entity',function (packet) {
-                if (packet.entityId && packet.type===90) {
-                    self.spawnId = packet.entityId;
-                    var entityPosition = new Position(packet.x,packet.y-1.6,packet.z);
-                    if (client.position && client.position instanceof Position) {
-                        var distance = client.position.distanceTo(entityPosition);
-                        if (distance !== -1 && distance < 0.5) {
-                            checkEntity();
-                        }
-                    }
+                if (!self.fishing && Date.now()-self.lastUseTime<=1500 && packet.entityId && packet.type===90) {
+                    self.fishEntityId = packet.entityId;
+                    self.fishing = true;
                 }
             });
+            // client.on('spawn_entity',function (packet) {
+            //     console.log('autofish.spawn_entity:',packet)
+            //     if (packet.entityId && packet.type===90) {
+            //         self.spawnId = packet.entityId;
+            //         var entityPosition = new Position(packet.x,packet.y-1.6,packet.z);
+            //         if (client.position && client.position instanceof Position) {
+            //             var distance = client.position.distanceTo(entityPosition);
+            //             if (distance !== -1 && distance < 0.5) {
+            //                 checkEntity();
+            //             }
+            //         }
+            //     }
+            // });
             client.on('entity_teleport',function (packet) {
                 if (packet.entityId) {
-                    var id = packet.entityId;
-                    if (self.teleportIds.indexOf(id)===-1){
-                        self.teleportIds.push(id);
-                        checkEntity();
-                    }
+                    // var id = packet.entityId;
+                    // if (self.teleportIds.indexOf(id)===-1){
+                    //     self.teleportIds.push(id);
+                    //     checkEntity();
+                    // }
                     client.write('teleport_confirm',{teleportId:packet.entityId})
                 }
             });
@@ -101,30 +107,52 @@ class AutoFish {
             }
             function use_fish_rod(){
                 self.lastUseTime = Date.now();
-                if (!self.fishing) {
-                    self.checkEntity = true;
-                }
                 client.write('use_item',{hand:0});
             }
-            function canFish() {
-                if (!self.config.open) return false;
-                if (self.client.inventory.getHeldItem().id === 568) {
-                    return true;
-                }
-                else {
-                    self.client.emit('lmc:plugin',{plugin:'autofish',message:'当前选择的物品不是鱼竿，尝试切换到鱼竿'});
-                    var items = self.client.inventory.getHeldItems();
-                    for (let i = 0, count = items.length; i < count; i++) {
-                        if (items[i].id === 568) {
-                            self.client.emit('lmc:plugin',{plugin:'autofish',message:'检测到鱼竿，切换到鱼竿'});
-                            self.client.inventory.setHeldItem(i);
-                            return false;
-                        }
+        }
+        bindEvent();
+    }
+
+    autoSwitchFishrod (){
+        if (this.client && this.client.version && this.client.version.version) {
+            let version = this.client.version.version;
+            let fishRodItemId = 0;
+            if (version < 393) {
+                fishRodItemId = 346;
+            }
+            else if (version === 393) {
+                fishRodItemId = 563;
+            }
+            else if (version <= 404) {
+                fishRodItemId = 568;
+            }
+            if (fishRodItemId === 0) return;
+            if (this.client.inventory.getHeldItem().id !== fishRodItemId) {
+                this.client.emit('lmc:plugin',{plugin:'autofish',message:'当前选择的物品不是鱼竿，尝试切换到鱼竿'});
+                var items = this.client.inventory.getHeldItems();
+                for (let i = 0, count = items.length; i < count; i++) {
+                    if (items[i].id === fishRodItemId) {
+                        this.client.emit('lmc:plugin',{plugin:'autofish',message:'检测到鱼竿，切换到鱼竿'});
+                        this.client.inventory.setHeldItem(i);
+                        break;
                     }
                 }
             }
         }
-        bindEvent();
+    }
+
+    set config(_config){
+        if (!(_config instanceof AutoModule)) {
+            _config = new AutoModule()
+        }
+        if ((!this._config || !this._config.open) && _config.open){
+            this.autoSwitchFishrod();
+        }
+        this._config = _config;
+    }
+
+    get config(){
+        return this._config;
     }
 
     start (){

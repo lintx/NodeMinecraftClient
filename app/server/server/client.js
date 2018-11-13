@@ -7,7 +7,7 @@ const MessageType = {
     chat : "chat",
     info : "info"
 };
-const maxbuff = 1000;
+const maxbuff = 500;
 
 function bindEvent(client) {
     var bot = client.client;
@@ -65,16 +65,49 @@ function bindEvent(client) {
         let data = {
             health:o(packet.health),
             food:o(packet.food),
-            foodStaturation:o(packet.foodStaturation)
+            foodSaturation:o(packet.foodSaturation)
         };
+        client.health = data;
         client.emit('update_health',data);
     });
     bot.on('session',(session)=>{
-        client.config.config.session = session;
+        client.config.config.userConfig.session = session;
         client.emit('update_config');
+    });
+    bot.on('login',(packet)=>{
+        client.emit('login',packet);
     });
 
     bot.on('update_time',autoRemove);
+
+    bot.on('connect', function (packet) {
+        client.isConnect = true;
+        client.emit('lmc:connect');
+    });
+    bot.on('disconnect', function (packet) {
+        // console.log("disconnect")
+        client.isConnect = false;
+        client.emit('lmc:disconnect');
+    });
+    bot.on('kick_disconnect', (packet)=>{
+        client.isConnect = false;
+        client.emit('lmc:disconnect');
+    });
+    // bot.on('keep_alive',(packet)=>{
+    //     lastAliveTime = Date.now();
+    // });
+    bot.on('end',(packet)=>{
+        client.isConnect = false;
+        client.emit('lmc:disconnect');
+    });
+
+    //keep_alive大约15秒左右一次，用这个来判断是否离线试试
+    // bot.on('keep_alive',(packet)=>{
+    //     let message = new Message(MessageType.info,'keep_alive');
+    //     buffer.push(message);
+    //     client.emit('message',message);
+    //     // console.log('keep_alive',packet);
+    // });
 
     function autoRemove() {
         if (buffer.length > maxbuff) {
@@ -154,12 +187,16 @@ function parseVanilla(jsonMsg) {
             player      = jsonMsg.with[0].text;
             msg         = jsonMsg.with[1].text;
             return`§${color}你悄悄地对${player}说:${msg}`;
+        case 'chat.type.advancement.task':
+            player      = jsonMsg.with[0].insertion?jsonMsg.with[0].insertion:'未知玩家';
+            return`§${player}取得了未知进度`;
+
     }
 
     if (/^commands\..*usage$/.test(jsonMsg.translate)) {
         return '§' + color + parseCommandUsage(jsonMsg.translate);
     }
-    return `§${color}未能解析的消息`;
+    return `§${color}未能解析的消息，原始内容：${JSON.stringify(jsonMsg)}`;
 }
 function parseExtra(extra) {
     let string = '';
@@ -403,6 +440,8 @@ class Client extends EventEmitter{
         this.message = [];
 
         this.client = null;
+        this.isConnect = false;
+        this.health = {health: 0, food: 0, foodSaturation: 0};
 
         this.updateConfig(config);
 
@@ -446,6 +485,8 @@ class Client extends EventEmitter{
     }
 
     logout(){
+        this.isConnect = false;
+        this.connectListen();
         this.client && this.client.end();
     }
 
@@ -460,6 +501,13 @@ class Client extends EventEmitter{
         this.tempMessage = [];
         this.on('message',this.messageListen);
         this.on('update_health',this.healthListen);
+        this.on('lmc:connect',this.connectListen);
+        this.on('lmc:disconnect',this.connectListen);
+        this.on('login',this.loginListen);
+
+        this.healthListen(this.health);
+        this.connectListen();
+        this.loginListen();
 
         this.tempMessage = this.message.slice();
 
@@ -478,13 +526,24 @@ class Client extends EventEmitter{
         }
     }
     healthListen (packet){
-        this.clientSocket.emit('update_health',packet);
+        this.clientSocket && this.clientSocket.emit('update_health',packet);
+    }
+    connectListen(){
+        this.clientSocket && this.clientSocket.emit('connectStatus',this.isConnect);
+    }
+    loginListen(){
+        this.clientSocket && this.clientSocket.emit('mclogin',{
+            username:this.client.username
+        });
     }
 
     unloadClientSocket(){
         this.clientSocket = null;
         this.removeListener('message',this.messageListen);
         this.removeListener('update_health',this.healthListen);
+        this.removeListener('lmc:connect',this.connectListen);
+        this.removeListener('lmc:disconnect',this.connectListen);
+        this.removeListener('login',this.loginListen);
     }
 }
 

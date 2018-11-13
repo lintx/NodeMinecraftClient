@@ -1,8 +1,8 @@
 <div ng-if="isLogin">
-    <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top border-bottom">
-        <a class="navbar-brand" href="javascript:;">MC云服务</a>
-        <div class="d-md-none">
-            <button class="btn btn-outline-info">我的连接</button>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top border-bottom">
+        <a class="navbar-brand" href="javascript:;">MC云玩家</a>
+        <div class="d-lg-none">
+            <button class="btn btn-outline-info" ng-click="openModal('my_links')">我的连接</button>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -14,16 +14,16 @@
                     <a class="nav-link text-dark" href="javascript:;">我的连接</a>
                 </li>
                 <li class="nav-item text-dark p-1">
-                    玩家名已连接
+                    {{status.username?status.username:'无用户'}}:{{select_link.userConfig.islogin?'已连接':'未连接'}}
                 </li>
                 <li class="nav-item text-dark p-1">
-                    生命值：
+                    生命值：{{health.health}}
                 </li>
                 <li class="nav-item text-dark p-1">
-                    饥饿值：
+                    饥饿值：{{health.food}}
                 </li>
                 <li class="nav-item text-dark p-1">
-                    饱食度：
+                    饱食度：{{health.foodSaturation}}
                 </li>
             </ul>
             <div class="ml-2">
@@ -56,7 +56,7 @@
             </div>
             <div class="lmc-message">
                 <p ng-repeat="msg in message">
-                    <span ng-show="showTime" class="lmc-message-time">{{msg.time|int2date}} : </span>
+                    <span ng-show="showTime" class="lmc-message-time">{{msg.time|int2date}} </span>
                     <span ng-if="msg.type==='error'" class="text-danger"> [错误信息] </span>
                     <span ng-if="msg.type==='info'" class="text-info"> [提示信息] </span>
                     <span ng-bind-html="msg.message|unsafe" ng-class="{'text-danger':msg.type=='error','text-info':msg.type=='info'}"></span>
