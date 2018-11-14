@@ -574,7 +574,7 @@ class Client extends EventEmitter{
         let index = tempMessage.length - 1;
         let runId = this.runId;
         let sendMessage = ()=>{
-            if (self.clientSocket){
+            if (self.clientSocket && index >= 0){
                 self.clientSocket.emit('insert_message',tempMessage[index]);
             }
             index -= 1;
