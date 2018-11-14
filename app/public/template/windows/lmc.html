@@ -30,9 +30,9 @@
                 <button ng-if="isAdmin" ng-click="openModal('modal_users')" class="btn btn-outline-info">用户管理</button>
                 <button ng-click="showTime = !showTime" class="btn btn-outline-info">{{showTime?"隐藏日志时间":"显示日志时间"}}</button>
                 <button ng-click="loginAndLogout()" class="btn btn-outline-info">{{select_link.userConfig.islogin?'登出服务器':'登录服务器'}}</button>
+                <button class="btn btn-outline-info" ng-click="link_setting()">连接设置</button>
             </div>
             <div class="d-none d-md-block ml-2">
-                <button class="btn btn-outline-info" ng-click="link_setting()">连接设置</button>
                 <button class="btn btn-outline-info" ng-click="openModal('my_links')">我的连接</button>
             </div>
         </div>

@@ -7,7 +7,7 @@ const MessageType = {
     chat : "chat",
     info : "info"
 };
-const maxbuff = 500;
+const maxbuff = 100;
 
 function bindEvent(client) {
     var bot = client.client;
