@@ -33,7 +33,7 @@
                         <p>连接到期时间：{{setting_link.end_time*1000|int2date}}</p>
                         <div class="form-group">
                             <label for="input_username">连接名</label>
-                            <input type="text" ng-model="setting_link.name" class="form-control form-control-sm" id="input_link_name" placeholder="输入连接名" autocomplete="off">
+                            <input maxlength="50" type="text" ng-model="setting_link.name" class="form-control form-control-sm" id="input_link_name" placeholder="输入连接名" autocomplete="off">
                             <small class="form-text text-muted">给这个连接设置一个名字以分辨不同的连接</small>
                         </div>
                     </div>
