@@ -188,8 +188,8 @@ module.exports = (socket)=>{
                     return;
                 }
                 let temp = new LinkModule.LinkModule(result[0]);
+                linkConfigs[temp.id] = new LinkModule.LinkModule(result[0]);
                 temp.config.userConfig.password = "";
-                linkConfigs[temp.id] = temp;
                 socket.emit('config',temp);
             });
         });
