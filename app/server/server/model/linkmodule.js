@@ -25,6 +25,7 @@ class LinkModule {
         this.user_id = data.user_id || 0;
         this.create_time = data.create_time || 0;
         this.end_time = data.end_time || 0;
+        this.name = data.name || '';
         // this.status = data.status || 0;
         this.config = new LinkConfig(data.config || {},this.salt);
     }

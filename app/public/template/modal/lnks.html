@@ -6,17 +6,13 @@
                 <table class="table" ng-if="links.length>0">
                     <thead>
                     <tr>
-                        <td>ID</td>
-                        <td>创建时间</td>
-                        <td>到期时间</td>
+                        <td>连接</td>
                         <td>操作</td>
                     </tr>
                     </thead>
                     <tbody>
                     <tr ng-repeat="link in links">
-                        <td>{{link.id}}</td>
-                        <td>{{link.create_time*1000|int2date}}</td>
-                        <td>{{link.end_time*1000|int2date}}</td>
+                        <td>{{link.id}}# {{link.name?link.name:'未命名'}}</td>
                         <td><a href="javascript:;" ng-click="selectlink(link)">进入</a></td>
                     </tr>
                     </tbody>

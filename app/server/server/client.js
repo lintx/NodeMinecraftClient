@@ -149,6 +149,13 @@ function bindEvent(client) {
     // });
 
     function autoRemove() {
+        if (client.config.end_time * 1000 < Date.now()) {
+            client.config.config.userConfig.islogin = false;
+            client.logout();
+            let message = new Message(MessageType.error,'连接已到期，连接已断开');
+            buffer.push(message);
+            client.emit('message',message);
+        }
         if (buffer.length > maxbuff) {
             buffer.shift();
             autoRemove();
@@ -484,24 +491,29 @@ class Client extends EventEmitter{
 
         this.updateConfig(config);
 
-        bindEvent(this);
     }
 
     updateConfig(config){
         if (!(config instanceof LinkModule.LinkModule)) config = new LinkModule.LinkModule();
+        if (config.end_time * 1000 < Date.now()) {
+            this.config = config;
+            return '连接已到期，无法连接';
+        }
 
         if (this.client === null) {
             let user = config.config.userConfig;
             this.client = new LClient(user);
+            bindEvent(this);
             upClientConfig(this.client);
             if (user.islogin && user.username && user.host && user.port) {
-                this.client.connect();
+                this.client.connect(user);
             }
         }
         else {
             //重新登录
             let oldUser = this.config.config.userConfig;
             let newUser = config.config.userConfig;
+            this.client.option = newUser;
             if (newUser.islogin && newUser.username && newUser.host && newUser.port && (oldUser.username !== newUser.username || oldUser.host !== newUser.host || oldUser.port !== newUser.port)) {
                 this.client.end();
                 upClientConfig(this.client);
@@ -530,7 +542,11 @@ class Client extends EventEmitter{
     }
 
     login(){
+        if (this.config.end_time * 1000 < Date.now()) {
+            return '连接已到期，无法连接';
+        }
         this.client && this.client.connect(this.config.config.userConfig);
+        return 'ok';
     }
 
     setClientSocket(socket){
@@ -572,7 +588,7 @@ class Client extends EventEmitter{
     }
     loginListen(){
         this.clientSocket && this.clientSocket.emit('mclogin',{
-            username:this.client.username
+            username:this.client && this.client.username ? this.client.username : '未知'
         });
     }
 

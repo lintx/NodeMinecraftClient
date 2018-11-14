@@ -8,8 +8,14 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" ng-click="linkSettingSelectIndex=0" ng-class="{'active':linkSettingSelectIndex==0}" href="#">账户设置</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" ng-click="linkSettingSelectIndex=1" ng-class="{'active':linkSettingSelectIndex==1}" href="#">账户设置</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" ng-click="linkSettingSelectIndex=2" ng-class="{'active':linkSettingSelectIndex==2}" href="#">服务器设置</a>
+                            </li>
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle text-dark" ng-class="{'active':linkSettingSelectIndex!=0}" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">插件设置</a>
+                                <a class="nav-link dropdown-toggle text-dark" ng-class="{'active':linkSettingSelectIndex>=10}" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">插件设置</a>
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item" ng-click="linkSettingSelectIndex=10" ng-class="{'active':linkSettingSelectIndex==10}" href="#">自动重连</a>
                                     <a class="dropdown-item" ng-click="linkSettingSelectIndex=11" ng-class="{'active':linkSettingSelectIndex==11}" href="#">自动复活</a>
@@ -23,90 +29,105 @@
                     </nav>
                 <div class="tab-content border-left border-bottom border-right rounded-bottom mb-3 p-3">
                     <div class="tab-pane fade" ng-class="{'active':linkSettingSelectIndex==0,'show':linkSettingSelectIndex==0}">
+                        <p>连接创建时间：{{setting_link.create_time*1000|int2date}}</p>
+                        <p>连接到期时间：{{setting_link.end_time*1000|int2date}}</p>
+                        <div class="form-group">
+                            <label for="input_username">连接名</label>
+                            <input type="text" ng-model="setting_link.name" class="form-control form-control-sm" id="input_link_name" placeholder="输入连接名" autocomplete="off">
+                            <small class="form-text text-muted">给这个连接设置一个名字以分辨不同的连接</small>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" ng-class="{'active':linkSettingSelectIndex==1,'show':linkSettingSelectIndex==1}">
                         <div class="form-group">
                             <label for="input_username">用户名</label>
-                            <input type="text" ng-model="setting_link.userConfig.username" class="form-control form-control-sm" id="input_username" placeholder="输入用户名" autocomplete="off">
+                            <input type="text" ng-model="setting_link.config.userConfig.username" class="form-control form-control-sm" id="input_username" placeholder="输入用户名" autocomplete="off">
                             <small class="form-text text-muted">你的国际版minecraft的登录名，或者离线模式ID</small>
                         </div>
-                        <div class="form-group">
+                        <div class="form-check">
+                            <input ng-model="setting_link.config.userConfig.offline" type="checkbox" class="form-check-input" id="input_offline_check">
+                            <label class="form-check-label" for="input_offline_check">离线模式登录</label>
+                        </div>
+                        <div class="form-group" ng-show="!setting_link.config.userConfig.offline">
                             <label for="input_password">密码</label>
-                            <input type="password" ng-model="setting_link.userConfig.password" class="form-control form-control-sm" id="input_password" placeholder="输入密码" autocomplete="off">
+                            <input type="password" ng-model="setting_link.config.userConfig.password" class="form-control form-control-sm" id="input_password" placeholder="输入密码" autocomplete="off">
                             <small class="form-text text-muted">你的国际版minecraft的登录密码，离线模式请留空，修改时不修改密码请留空</small>
                         </div>
+                    </div>
+                    <div class="tab-pane fade" ng-class="{'active':linkSettingSelectIndex==2,'show':linkSettingSelectIndex==2}">
                         <div class="form-group">
                             <label for="input_host">登录服务器地址</label>
-                            <input type="text" ng-model="setting_link.userConfig.host" class="form-control form-control-sm" id="input_host" placeholder="输入服务器地址" autocomplete="off">
+                            <input type="text" ng-model="setting_link.config.userConfig.host" class="form-control form-control-sm" id="input_host" placeholder="输入服务器地址" autocomplete="off">
                             <small class="form-text text-muted">你需要登录到哪个服务器的网址或IP</small>
                         </div>
                         <div class="form-group">
                             <label for="input_port">登录服务器端口</label>
-                            <input type="text" ng-model="setting_link.userConfig.port" class="form-control form-control-sm" id="input_port" placeholder="输入服务器端口" autocomplete="off">
+                            <input type="text" ng-model="setting_link.config.userConfig.port" class="form-control form-control-sm" id="input_port" placeholder="输入服务器端口" autocomplete="off">
                             <small class="form-text text-muted">你需要登录到哪个服务器的端口，默认端口是25565</small>
                         </div>
                         <div class="form-group">
                             <label for="input_version">服务器版本</label>
-                            <input type="text" ng-model="setting_link.userConfig.version" class="form-control form-control-sm" id="input_version" placeholder="输入服务器版本" autocomplete="off">
+                            <input type="text" ng-model="setting_link.config.userConfig.version" class="form-control form-control-sm" id="input_version" placeholder="输入服务器版本" autocomplete="off">
                             <small class="form-text text-muted">你使用哪个版本登录服务器</small>
                         </div>
 
                     </div>
                     <div class="tab-pane fade" ng-class="{'active':linkSettingSelectIndex==10,'show':linkSettingSelectIndex==10}">
                         <div class="form-check">
-                            <input ng-model="setting_link.pluginConfig.autoconnect.open" type="checkbox" class="form-check-input" id="input_autoreconnect_check">
+                            <input ng-model="setting_link.config.pluginConfig.autoconnect.open" type="checkbox" class="form-check-input" id="input_autoreconnect_check">
                             <label class="form-check-label" for="input_autoreconnect_check">掉线后自动重连</label>
                         </div>
                         <div class="form-group">
                             <label for="input_autoreconnect_count">最大尝试次数</label>
-                            <input ng-model="setting_link.pluginConfig.autoconnect.tryMaxCount" type="number" class="form-control form-control-sm" min="1" id="input_autoreconnect_count" placeholder="输入最大尝试次数" autocomplete="off">
+                            <input ng-model="setting_link.config.pluginConfig.autoconnect.tryMaxCount" type="number" class="form-control form-control-sm" min="1" id="input_autoreconnect_count" placeholder="输入最大尝试次数" autocomplete="off">
                             <small class="form-text text-muted">最多尝试多少次重连失败后不再重连</small>
                         </div>
                         <div class="form-group">
                             <label for="input_autoreconnect_delay">重连前等待时间</label>
-                            <input ng-model="setting_link.pluginConfig.autoconnect.delay" type="number" class="form-control form-control-sm" min="1" id="input_autoreconnect_delay" placeholder="输入重连前等待时间" autocomplete="off">
+                            <input ng-model="setting_link.config.pluginConfig.autoconnect.delay" type="number" class="form-control form-control-sm" min="1" id="input_autoreconnect_delay" placeholder="输入重连前等待时间" autocomplete="off">
                             <small class="form-text text-muted">每次重连尝试前等待时间，单位：秒，建议30秒左右</small>
                         </div>
                     </div>
                     <div class="tab-pane fade" ng-class="{'active':linkSettingSelectIndex==11,'show':linkSettingSelectIndex==11}">
                         <div class="form-check">
-                            <input ng-model="setting_link.pluginConfig.autofevive.open" type="checkbox" class="form-check-input" id="input_autofivive_check">
+                            <input ng-model="setting_link.config.pluginConfig.autofevive.open" type="checkbox" class="form-check-input" id="input_autofivive_check">
                             <label class="form-check-label" for="input_autofivive_check">死亡后自动复活</label>
                         </div>
                     </div>
                     <div class="tab-pane fade" ng-class="{'active':linkSettingSelectIndex==12,'show':linkSettingSelectIndex==12}">
                         <div class="form-check">
-                            <input ng-model="setting_link.pluginConfig.autofish.open" type="checkbox" class="form-check-input" id="input_autofish_check">
+                            <input ng-model="setting_link.config.pluginConfig.autofish.open" type="checkbox" class="form-check-input" id="input_autofish_check">
                             <label class="form-check-label" for="input_autofish_check">开启自动钓鱼</label>
                         </div>
                         <div class="form-group">
                             <label for="input_autofish_count">抛竿延迟</label>
-                            <input ng-model="setting_link.pluginConfig.autofish.delay" type="number" class="form-control form-control-sm" min="1" id="input_autofish_count" placeholder="输入抛竿延迟" autocomplete="off">
+                            <input ng-model="setting_link.config.pluginConfig.autofish.delay" type="number" class="form-control form-control-sm" min="1" id="input_autofish_count" placeholder="输入抛竿延迟" autocomplete="off">
                             <small class="form-text text-muted">两次抛竿之间延迟时间，建议时间1-3秒</small>
                         </div>
                         <div class="form-group">
                             <label for="input_autofish_delay">超时收杆</label>
-                            <input ng-model="setting_link.pluginConfig.autofish.timeout" type="number" class="form-control form-control-sm" min="10" id="input_autofish_delay" placeholder="输入超时收杆时间" autocomplete="off">
+                            <input ng-model="setting_link.config.pluginConfig.autofish.timeout" type="number" class="form-control form-control-sm" min="10" id="input_autofish_delay" placeholder="输入超时收杆时间" autocomplete="off">
                             <small class="form-text text-muted">多少秒后没有检测到钓到鱼后收杆重新抛竿，建议时间60-100左右</small>
                         </div>
                     </div>
                     <div class="tab-pane fade" ng-class="{'active':linkSettingSelectIndex==13,'show':linkSettingSelectIndex==13}">
                         <div class="form-check">
-                            <input ng-model="setting_link.pluginConfig.autoattack.open" type="checkbox" class="form-check-input" id="input_autoattack_check">
+                            <input ng-model="setting_link.config.pluginConfig.autoattack.open" type="checkbox" class="form-check-input" id="input_autoattack_check">
                             <label class="form-check-label" for="input_autoattack_check">开启自动攻击，请小心被管理判为用挂BAN人</label>
                         </div>
                         <div class="form-group">
                             <label for="input_autoattack_yaw">自动攻击范围角度</label>
-                            <input ng-model="setting_link.pluginConfig.autoattack.yaw" type="number" class="form-control form-control-sm" min="1" max="360" id="input_autoattack_yaw" placeholder="输入范围角度" autocomplete="off">
+                            <input ng-model="setting_link.config.pluginConfig.autoattack.yaw" type="number" class="form-control form-control-sm" min="1" max="360" id="input_autoattack_yaw" placeholder="输入范围角度" autocomplete="off">
                             <small class="form-text text-muted">1-360度，角度过大可能被管理发现后被BAN</small>
                         </div>
                         <div class="form-group">
                             <label for="input_autoattack_dist">攻击距离</label>
-                            <input  ng-model="setting_link.pluginConfig.autoattack.dist" type="number" class="form-control form-control-sm" min="1" max="10" id="input_autoattack_dist" placeholder="输入攻击距离" autocomplete="off">
+                            <input  ng-model="setting_link.config.pluginConfig.autoattack.dist" type="number" class="form-control form-control-sm" min="1" max="10" id="input_autoattack_dist" placeholder="输入攻击距离" autocomplete="off">
                             <small class="form-text text-muted">攻击多少格以内的生物（包括怪物、玩家[村民视为怪物]）</small>
                         </div>
                     </div>
                     <div class="tab-pane fade" ng-class="{'active':linkSettingSelectIndex==14,'show':linkSettingSelectIndex==14}">
                         <div class="form-check">
-                            <input ng-model="setting_link.pluginConfig.autochat.open" type="checkbox" class="form-check-input" id="input_autochat_check">
+                            <input ng-model="setting_link.config.pluginConfig.autochat.open" type="checkbox" class="form-check-input" id="input_autochat_check">
                             <label class="form-check-label" for="input_autochat_check">开启自动说话（支持命令）</label>
                         </div>
                         <div class="card">
@@ -114,10 +135,10 @@
                                 <span class="flex-fill">
                                     说话内容
                                 </span>
-                                <button ng-click="setting_link.pluginConfig.autochat.chats.push({open:false,mode:0,time:0,chat:''})" class="btn btn-outline-secondary btn-sm">添加</button>
+                                <button ng-click="setting_link.config.pluginConfig.autochat.chats.push({open:false,mode:0,time:0,chat:''})" class="btn btn-outline-secondary btn-sm">添加</button>
                             </div>
                             <div class="card-body">
-                                <div class="input-group" ng-repeat="chat in setting_link.pluginConfig.autochat.chats">
+                                <div class="input-group" ng-repeat="chat in setting_link.config.pluginConfig.autochat.chats">
                                     <div class="input-group-prepend">
                                         <div class="input-group-text">
                                             <input type="checkbox" ng-model="chat.open">
@@ -130,7 +151,7 @@
                                     <input type="number" ng-model="chat.time" class="form-control" placeholder="时间">
                                     <input type="text" ng-model="chat.chat" class="form-control" placeholder="说话内容">
                                     <div class="input-group-append">
-                                        <button ng-click="setting_link.pluginConfig.autochat.chats.splice($index,1)" class="btn btn-outline-secondary" type="button">删除</button>
+                                        <button ng-click="setting_link.config.pluginConfig.autochat.chats.splice($index,1)" class="btn btn-outline-secondary" type="button">删除</button>
                                     </div>
                                 </div>
                             </div>

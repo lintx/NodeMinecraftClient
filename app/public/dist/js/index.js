@@ -86,8 +86,8 @@
         });
         socket.on('connectStatus',function (status) {
             $scope.$apply(function () {
-                if ($scope.select_link && $scope.select_link.userConfig) {
-                    $scope.select_link.userConfig.islogin = status;
+                if ($scope.select_link && $scope.select_link.config.userConfig) {
+                    $scope.select_link.config.userConfig.islogin = status;
                 }
             });
         });
@@ -136,25 +136,19 @@
 
                 $scope.links.forEach(function (link) {
                     if (link.id === linkid) {
-                        $scope.select_link = link.config;
+                        $scope.select_link = link;
                     }
                 });
                 $scope.closeModal('my_links');
             });
         });
         $scope.loginAndLogout = function(){
-            if ($scope.select_link.userConfig.islogin) {
+            if ($scope.select_link.config.userConfig.islogin) {
                 socket.emit('mclogout');
             }
             else {
                 socket.emit('mclogin');
             }
-            // $scope.links.forEach(function (link) {
-            //     if (link.id === $scope.link_id) {
-            //         link.config.userConfig.islogin = !link.config.userConfig.islogin;
-            //         $scope.select_link = link.config;
-            //     }
-            // });
         };
         /**
          * 以下为link设置
@@ -175,6 +169,7 @@
         };
         $scope.saveLinkSetting = function(){
             $scope.select_link = $scope.setting_link;
+            $scope.setting_link.create_time = 0;
             socket.emit('config',$scope.setting_link);
             $scope.closeModal('my_links_setting');
         };
@@ -183,7 +178,7 @@
                 $scope.links.forEach(function (link,index) {
                     if (link.id === config.id) {
                         $scope.links[index] = config;
-                        $scope.select_link = $scope.links[index].config;
+                        $scope.select_link = $scope.links[index];
                     }
                 });
             });

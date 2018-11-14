@@ -70,7 +70,7 @@ module.exports = (socket)=>{
             success('登录成功');
             socket.emit('onlogin');
 
-            db.query('select id,create_time,end_time,config from link where `user_id`=?',[userId],(err,result)=>{
+            db.query('select id,create_time,end_time,name,config from link where `user_id`=?',[userId],(err,result)=>{
                 if (err){
                     return error('查询连接失败，请刷新重试[code=1]');
                 }
@@ -171,19 +171,24 @@ module.exports = (socket)=>{
         if (!oldConfig) {
             return error('可能没有选择连接，或者连接不存在');
         }
-        let newConfig = new LinkModule.LinkModule({config:config});
+        let newConfig = new LinkModule.LinkModule(config);
         if (oldConfig.config.userConfig.password && newConfig.config.userConfig.username === oldConfig.config.userConfig.username && !newConfig.config.userConfig.password) {
             newConfig.config.userConfig.password = oldConfig.config.userConfig.password;
+            newConfig.config.userConfig.session = oldConfig.config.userConfig.session;
+        }
+        if (config.config.userConfig.offline) {
+            newConfig.config.userConfig.password = null;
+            newConfig.config.userConfig.session = null;
         }
         newConfig.id = oldConfig.id;
         newConfig.create_time = oldConfig.create_time;
         newConfig.end_time = oldConfig.end_time;
         linkConfigs[linkId] = newConfig;
-        db.query('update `link` set config=? where `id`=?',[newConfig.getDbData().config,linkId],(err,result)=>{
+        db.query('update `link` set name=?,config=? where `id`=?',[config.name,newConfig.getDbData().config,linkId],(err,result)=>{
             if (err) {
                 return error('保存失败');
             }
-            db.query('select id,create_time,end_time,config from link where `id`=?',[linkId],(err,result)=>{
+            db.query('select id,create_time,end_time,name,config from link where `id`=?',[linkId],(err,result)=>{
                 if (err){
                     return;
                 }
@@ -202,9 +207,13 @@ module.exports = (socket)=>{
     socket.on('mclogin',()=>{
         let client = getClient();
         if (client){
-            client.login();
+            let ret = client.login();
+            if (ret !== 'ok') {
+                return error(ret);
+            }
             let config = linkConfigs[linkId];
             config.config.userConfig.islogin = true;
+            // config.end_time = Date.now()/1000+10;
             client.updateConfig(config);
             db.query('update `link` set config=? where `id`=?',[config.getDbData().config,linkId],(err,result)=>{
 
@@ -215,10 +224,10 @@ module.exports = (socket)=>{
     socket.on('mclogout',()=>{
         let client = getClient();
         if (client){
-            client.logout();
             let config = linkConfigs[linkId];
             config.config.userConfig.islogin = false;
             client.updateConfig(config);
+            client.logout();
             db.query('update `link` set config=? where `id`=?',[config.getDbData().config,linkId],(err,result)=>{
 
             });

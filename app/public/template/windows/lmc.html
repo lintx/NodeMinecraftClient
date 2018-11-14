@@ -14,7 +14,7 @@
                     <a class="nav-link text-dark" href="javascript:;">我的连接</a>
                 </li>
                 <li class="nav-item text-dark p-1">
-                    {{status.username?status.username:'无用户'}}:{{select_link.userConfig.islogin?'已连接':'未连接'}}
+                    {{status.username?status.username:'无用户'}}:{{select_link.config.userConfig.islogin?'已连接':'未连接'}}
                 </li>
                 <li class="nav-item text-dark p-1">
                     生命值：{{health.health}}
@@ -29,7 +29,7 @@
             <div class="ml-2">
                 <button ng-if="isAdmin" ng-click="openModal('modal_users')" class="btn btn-outline-info">用户管理</button>
                 <button ng-click="showTime = !showTime" class="btn btn-outline-info">{{showTime?"隐藏日志时间":"显示日志时间"}}</button>
-                <button ng-click="loginAndLogout()" class="btn btn-outline-info">{{select_link.userConfig.islogin?'登出服务器':'登录服务器'}}</button>
+                <button ng-click="loginAndLogout()" class="btn btn-outline-info">{{select_link.config.userConfig.islogin?'登出服务器':'登录服务器'}}</button>
                 <button class="btn btn-outline-info" ng-click="link_setting()">连接设置</button>
             </div>
             <div class="d-none d-md-block ml-2">
