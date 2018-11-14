@@ -4,7 +4,7 @@ let timeOut = -1;
 let isopen = false;
 function bindEvent(client, autoconnect) {
     client.on('lmc:disconnect', ()=>{
-        if (isopen === false) {
+        if (isopen === false && client.option.islogin) {
             isopen = true;
             autoconnect.tryCount = 0;
             client.emit('lmc:plugin',{plugin:'autoconnect',message:`发现游戏掉线，启动重连程序，最大尝试次数： ${autoconnect.config.tryMaxCount} ，登录延时：${autoconnect.config.delay}秒`});
