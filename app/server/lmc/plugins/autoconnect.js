@@ -1,37 +1,43 @@
 const AutoConnectModule = require('../../server/model/linkmodule').AutoConnectConfig;
 
+let timeOut = -1;
+let isopen = false;
 function bindEvent(client, autoconnect) {
-    let lastAliveTime = Date.now();
-    client.on('lmc:connect', function (packet) {
-        autoconnect.isConnect = true;
-    });
     client.on('lmc:disconnect', ()=>{
-        autoconnect.isConnect = false;
-        autoconnect.tryCount = 0;
-        runReConnect(client,autoconnect);
+        if (isopen === false) {
+            isopen = true;
+            autoconnect.tryCount = 0;
+            client.emit('lmc:plugin',{plugin:'autoconnect',message:`发现游戏掉线，启动重连程序，最大尝试次数： ${autoconnect.config.tryMaxCount} ，登录延时：${autoconnect.config.delay}秒`});
+            runReConnect(client,autoconnect);
+        }
     });
 }
 
 function runReConnect(client, autoconnect) {
-    if (autoconnect.config.open) {
+    if (autoconnect.config.open && timeOut === -1) {
         autoconnect.tryCount += 1;
         if (autoconnect.tryCount <= autoconnect.config.tryMaxCount) {
-            setTimeout(()=>{
+            timeOut = setTimeout(()=>{
+                timeOut = -1;
                 tryReConnect(client,autoconnect);
             },autoconnect.config.delay*1000);
         }
         else {
+            isopen = false;
             client.emit('lmc:plugin',{plugin:'autoconnect',message:`第 ${autoconnect.tryCount} 次尝试重新连接后依然没有成功，尝试次数已达上限，停止尝试重新连接`});
         }
     }
 }
 
 function tryReConnect(client, autoconnect) {
-    // console.log("reconnect,",autoconnect.isConnect,autoconnect.tryCount)
-    if (!autoconnect.isConnect) {
+    if (!client.isConnect) {
         client.emit('lmc:plugin',{plugin:'autoconnect',message:`第 ${autoconnect.tryCount} 次尝试重新连接`});
         autoconnect.client.connect();
         runReConnect(client,autoconnect);
+    }
+    else {
+        client.emit('lmc:plugin',{plugin:'autoconnect',message:`第 ${autoconnect.tryCount-1} 次尝试重新连接时已经连接成功`});
+        isopen = false;
     }
 }
 
@@ -42,7 +48,6 @@ class AutoConnect {
         }
         this.config = config;
         this.client = client;
-        this.isConnect = false;
         this.tryCount  = 0;
 
         bindEvent(client,this);

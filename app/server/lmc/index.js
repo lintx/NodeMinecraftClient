@@ -29,12 +29,30 @@ function bindEvent(client) {
         // console.log("session:",session,client._client)
         //这里要发通知让服务器存储session，以便下次使用，登录时如果有session应传入，会自动优先使用session
     });
+
+    client.on('connect', function (packet) {
+        client.isConnect = true;
+        client.emit('lmc:connect');
+    });
+    client.on('disconnect', function (packet) {
+        client.isConnect = false;
+        client.emit('lmc:disconnect',packet);
+    });
+    client.on('kick_disconnect', (packet)=>{
+        client.isConnect = false;
+        client.emit('lmc:disconnect',packet);
+    });
+    client.on('end',(packet)=>{
+        client.isConnect = false;
+        client.emit('lmc:disconnect');
+    });
 }
 
 class LinTxMinecraftClient extends EventEmitter{
     constructor (option) {
         super();
         this.supportVersion = require('./supportversion');
+        this.isConnect = false;
         this.option = option || {};
         this._client = null;
         this.version = null;

@@ -92,10 +92,40 @@ function bindEvent(client) {
         // console.log("disconnect")
         client.isConnect = false;
         client.emit('lmc:disconnect');
+
+        let info = '连接关闭，你已经掉线';
+        if (packet && packet.reason && typeof packet.reason === 'string') {
+            let json = JSON.parse(packet.reason);
+            if (json) {
+                info = '你已经掉线：' + parseExtra([json]);
+                info = info.replace(/§([0-9abcdef])([^§]*)/ig, (regex, color, msg) => {
+                    msg = msg.replace(/ /g, '&nbsp;');
+                    return `<span class="color-${color}">${msg}</span>`;
+                });
+            }
+        }
+        let message = new Message(MessageType.error,info);
+        buffer.push(message);
+        client.emit('message',message);
     });
     bot.on('kick_disconnect', (packet)=>{
         client.isConnect = false;
         client.emit('lmc:disconnect');
+
+        let info = '你被踢出服务器';
+        if (packet && packet.reason && typeof packet.reason === 'string') {
+            let json = JSON.parse(packet.reason);
+            if (json) {
+                info += '：' + parseExtra([json]);
+                info = info.replace(/§([0-9abcdef])([^§]*)/ig, (regex, color, msg) => {
+                    msg = msg.replace(/ /g, '&nbsp;');
+                    return `<span class="color-${color}">${msg}</span>`;
+                });
+            }
+        }
+        let message = new Message(MessageType.error,info);
+        buffer.push(message);
+        client.emit('message',message);
     });
     // bot.on('keep_alive',(packet)=>{
     //     lastAliveTime = Date.now();
@@ -103,6 +133,11 @@ function bindEvent(client) {
     bot.on('end',(packet)=>{
         client.isConnect = false;
         client.emit('lmc:disconnect');
+
+        let info = '连接丢失，你已经掉线';
+        let message = new Message(MessageType.error,info);
+        buffer.push(message);
+        client.emit('message',message);
     });
 
     //keep_alive大约15秒左右一次，用这个来判断是否离线试试
