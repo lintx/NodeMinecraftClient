@@ -52,6 +52,7 @@
             username:''
         };
         $scope.change_password_data = {
+            old:'',
             new:'',
             re:''
         };
@@ -122,10 +123,14 @@
         });
         $scope.dochangepassword = function () {
             var password = $scope.change_password_data.new;
+            if (password === $scope.change_password_data.old) {
+                return notyf.alert('新密码和新密码不能一样');
+            }
             if (password !== $scope.change_password_data.re) {
                 return notyf.alert('两次密码输入不一致');
             }
-            socketEmit('changepassword',password);
+            socketEmit('changepassword',$scope.change_password_data.old,password);
+            $scope.change_password_data.old = "";
             $scope.change_password_data.new = "";
             $scope.change_password_data.re = "";
             $scope.closeModal('change_my_password');

@@ -53,7 +53,7 @@ module.exports = (socket)=>{
             }
             let user = result[0];
             password = password + user.salt;
-            password = crypto.createHash("md5").digest('hex');
+            password = crypto.createHash("md5").update(password).digest('hex');
             if (password !== user.password) {
                 return error('用户名或密码错误');
             }
@@ -106,7 +106,7 @@ module.exports = (socket)=>{
             }
             let salt = stringRandom(10);
             password = password + salt;
-            password = crypto.createHash("md5").digest('hex');
+            password = crypto.createHash("md5").update(password).digest('hex');
             db.query('insert into `user` (username,password,salt,status) values (?,?,?,0)',[username,password,salt],(err,result)=>{
                 if (err){
                     return error('注册失败，请重试[code=2]');
@@ -118,7 +118,7 @@ module.exports = (socket)=>{
     socket.on('logout',()=>{
         userId = 0;
     });
-    socket.on('changepassword',(password)=>{
+    socket.on('changepassword',(old,password)=>{
         if (!password || password.length < 6) {
             return error('密码长度最少要6位字符');
         }
@@ -128,13 +128,31 @@ module.exports = (socket)=>{
 
         let salt = stringRandom(10);
         password = password + salt;
-        password = crypto.createHash("md5").digest('hex');
-        db.query('update `user` set password=?, salt=?  where `id`=?',[password,salt,userId],(err,result)=>{
+        password = crypto.createHash("md5").update(password).digest('hex');
+
+        db.query('select * from `user` where `id`=?',[userId],(err,result)=>{
             if (err){
-                return error('修改失败，请重试[code=1]');
+                console.log(err);
+                return error('查询失败，请重试[code=1]');
             }
-            success("修改密码成功");
+            if (!result || result.length===0) {
+                return error('用户不存在');
+            }
+            let user = result[0];
+            old = old + user.salt;
+            old = crypto.createHash("md5").update(old).digest('hex');
+            if (old !== user.password) {
+                return error('旧密码错误，无法修改密码');
+            }
+            db.query('update `user` set password=?, salt=?  where `id`=?',[password,salt,userId],(err,result)=>{
+                if (err){
+                    return error('修改失败，请重试[code=1]');
+                }
+                success("修改密码成功");
+            });
         });
+
+
     });
 
     socket.on('link',(id)=>{
@@ -276,7 +294,7 @@ module.exports = (socket)=>{
 
         let salt = stringRandom(10);
         password = password + salt;
-        password = crypto.createHash("md5").digest('hex');
+        password = crypto.createHash("md5").update(password).digest('hex');
         db.query('update `user` set password=?, salt=?  where `id`=?',[password,salt,userid],(err,result)=>{
             if (err){
                 return error('修改失败，请重试[code=1]');
