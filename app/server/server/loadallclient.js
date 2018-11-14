@@ -13,7 +13,6 @@ db.query('select * from link where `end_time`>?',[time],(err,result)=>{
             let config = client.config;
             db.query('update `link` set config=? where `id`=?',[config.getDbData().config,config.id],(err,result)=>{
             });
-            //这里要保存到数据库？
         });
         global.allClients[module.id] = client;
     });

@@ -51,6 +51,10 @@
         $scope.status = {
             username:''
         };
+        $scope.change_password_data = {
+            new:'',
+            re:''
+        };
         socket.on('message',function (message) {
             $scope.$apply(function () {
                 $scope.message.push(message);
@@ -72,6 +76,14 @@
                 });
             });
         });
+        $scope.logout = function(){
+            socketEmit('logout');
+            $scope.isLogin = false;
+            $scope.message = [];
+            $('modal').each(function(i,o){
+                $scope.closeModal(o.id);
+            });
+        };
         socket.on('update_health',function (health) {
             $scope.$apply(function () {
                 $scope.health.health = health.health;
@@ -108,6 +120,16 @@
                 $scope.isAdmin = true;
             });
         });
+        $scope.dochangepassword = function () {
+            var password = $scope.change_password_data.new;
+            if (password !== $scope.change_password_data.re) {
+                return notyf.alert('两次密码输入不一致');
+            }
+            socketEmit('changepassword',password);
+            $scope.change_password_data.new = "";
+            $scope.change_password_data.re = "";
+            $scope.closeModal('change_my_password');
+        };
 
         $scope.loginMode = true;
         $scope.loginData = {
@@ -121,9 +143,14 @@
         };
         $scope.login = function () {
             socketEmit('login',$scope.loginData.username,$scope.loginData.password);
+            $scope.loginData.username = '';
+            $scope.loginData.password = '';
         };
         $scope.register = function () {
             socketEmit('register',$scope.registerData.username,$scope.registerData.password);
+            $scope.registerData.username = '';
+            $scope.registerData.password = '';
+            $scope.registerData.repassword = '';
         };
 
         $scope.selectlink = function(link){
@@ -143,11 +170,15 @@
             });
         });
         $scope.loginAndLogout = function(){
+            if (!$scope.link_id) {
+                return notyf.alert('没有选择连接，无法设置');
+            }
+
             if ($scope.select_link.config.userConfig.islogin) {
-                socket.emit('mclogout');
+                socketEmit('mclogout');
             }
             else {
-                socket.emit('mclogin');
+                socketEmit('mclogin');
             }
         };
         /**
@@ -159,18 +190,13 @@
                 return notyf.alert('没有选择连接，无法设置');
             }
 
-            // $scope.links.forEach(function (link) {
-            //     if (link.id === $scope.link_id) {
-            //         $scope.setting_link = angular.copy(link.config);
-            //     }
-            // });
             $scope.setting_link = angular.copy($scope.select_link);
             $scope.openModal('my_links_setting');
         };
         $scope.saveLinkSetting = function(){
             $scope.select_link = $scope.setting_link;
             $scope.setting_link.create_time = 0;
-            socket.emit('config',$scope.setting_link);
+            socketEmit('config',$scope.setting_link);
             $scope.closeModal('my_links_setting');
         };
         socket.on('config',function (config) {

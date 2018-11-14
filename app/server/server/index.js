@@ -20,21 +20,12 @@ module.exports = (socket)=>{
             return allClients[linkId];
         }
         else {
-            // const link = new LinkModule.LinkModule({
-            //     config:{
-            //         autologin:true,
-            //         host: "127.0.0.1",   // optional
-            //         port: 25565,         // optional
-            //         username: "travis@sarbin.net",
-            //         password: "k4t4t0n1k",
-            //     }
-            // });
             let client = new Client(new LinkModule.LinkModule(linkConfigs[linkId]));
             client.on('update_config',()=>{
                 let config = client.config;
+                linkConfigs[config.id] = config;
                 db.query('update `link` set config=? where `id`=?',[config.getDbData().config,config.id],(err,result)=>{
                 });
-                //这里要保存到数据库？
             });
             allClients[linkId] = client;
             return client;
@@ -88,10 +79,6 @@ module.exports = (socket)=>{
                 socket.emit('isadmin');
             }
         });
-        //这里检测登录,登录成功后才绑定事件（link事件），然后返回link列表，如果新增了link或者link时间延长了，需要重新登录才能看到
-        //需要绑定chat事件/config事件/login/logout，chat事件世界发送到服务器即可
-        //config事件需要更新config，如果帐号密码或服务器地址或服务器端口改变，则需要重新连接
-        //client应使用全局储存
     });
 
     socket.on('register',(username,password)=>{
@@ -128,6 +115,27 @@ module.exports = (socket)=>{
             });
         });
     });
+    socket.on('logout',()=>{
+        userId = 0;
+    });
+    socket.on('changepassword',(password)=>{
+        if (!password || password.length < 6) {
+            return error('密码长度最少要6位字符');
+        }
+        if (password.length > 20) {
+            return error('密码长度最多20个字符')
+        }
+
+        let salt = stringRandom(10);
+        password = password + salt;
+        password = crypto.createHash("md5").digest('hex');
+        db.query('update `user` set password=?, salt=?  where `id`=?',[password,salt,userId],(err,result)=>{
+            if (err){
+                return error('修改失败，请重试[code=1]');
+            }
+            success("修改密码成功");
+        });
+    });
 
     socket.on('link',(id)=>{
         if (userId === 0) {
@@ -148,7 +156,6 @@ module.exports = (socket)=>{
         if (client){
             client.setClientSocket(socket);
         }
-        //登录成功后绑定client/建立client，建立client时应该绑定session事件以便更新session，然后记录linkid，以便
     });
 
     socket.on('chat',(chat)=>{

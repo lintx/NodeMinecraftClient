@@ -2,7 +2,23 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top border-bottom">
         <a class="navbar-brand" href="javascript:;">MC云玩家</a>
         <div class="d-lg-none">
-            <button class="btn btn-outline-info" ng-click="openModal('my_links')">我的连接</button>
+            <div class="dropdown d-inline-block">
+                <button class="btn btn-outline-info dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    管理菜单
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="javascript:;" ng-click="link_setting()">连接设置</a>
+                    <a class="dropdown-item" href="javascript:;" ng-click="loginAndLogout()">{{select_link.config.userConfig.islogin?'登出服务器':'登录服务器'}}</a>
+                    <a class="dropdown-item" href="javascript:;" ng-click="openModal('my_links')">我的连接</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="javascript:;" ng-click="showTime = !showTime">{{showTime?"隐藏日志时间":"显示日志时间"}}</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="javascript:;" ng-click="openModal('change_my_password')">修改密码</a>
+                    <a class="dropdown-item" href="javascript:;" ng-click="logout()">退出登录</a>
+                    <div class="dropdown-divider" ng-if="isAdmin"></div>
+                    <a class="dropdown-item" href="javascript:;" ng-if="isAdmin" ng-click="openModal('modal_users')">用户管理</a>
+                </div>
+            </div>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -17,23 +33,33 @@
                     {{status.username?status.username:'无用户'}}:{{select_link.config.userConfig.islogin?'已连接':'未连接'}}
                 </li>
                 <li class="nav-item text-dark p-1">
-                    生命值：{{health.health}}
+                    生命值{{health.health}}
                 </li>
                 <li class="nav-item text-dark p-1">
-                    饥饿值：{{health.food}}
+                    饥饿值{{health.food}}
                 </li>
                 <li class="nav-item text-dark p-1">
-                    饱食度：{{health.foodSaturation}}
+                    饱食度{{health.foodSaturation}}
                 </li>
             </ul>
-            <div class="ml-2">
-                <button ng-if="isAdmin" ng-click="openModal('modal_users')" class="btn btn-outline-info">用户管理</button>
-                <button ng-click="showTime = !showTime" class="btn btn-outline-info">{{showTime?"隐藏日志时间":"显示日志时间"}}</button>
-                <button ng-click="loginAndLogout()" class="btn btn-outline-info">{{select_link.config.userConfig.islogin?'登出服务器':'登录服务器'}}</button>
-                <button class="btn btn-outline-info" ng-click="link_setting()">连接设置</button>
-            </div>
-            <div class="d-none d-md-block ml-2">
-                <button class="btn btn-outline-info" ng-click="openModal('my_links')">我的连接</button>
+            <div class="d-none d-lg-block ml-2">
+                <div class="dropdown d-inline-block">
+                    <button class="btn btn-outline-info dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        管理菜单
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="javascript:;" ng-click="link_setting()">连接设置</a>
+                        <a class="dropdown-item" href="javascript:;" ng-click="loginAndLogout()">{{select_link.config.userConfig.islogin?'登出服务器':'登录服务器'}}</a>
+                        <a class="dropdown-item" href="javascript:;" ng-click="openModal('my_links')">我的连接</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="javascript:;" ng-click="showTime = !showTime">{{showTime?"隐藏日志时间":"显示日志时间"}}</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="javascript:;" ng-click="openModal('change_my_password')">修改密码</a>
+                        <a class="dropdown-item" href="javascript:;" ng-click="logout()">退出登录</a>
+                        <div class="dropdown-divider" ng-if="isAdmin"></div>
+                        <a class="dropdown-item" href="javascript:;" ng-if="isAdmin" ng-click="openModal('modal_users')">用户管理</a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
