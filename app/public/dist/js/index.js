@@ -51,6 +51,8 @@
         $scope.status = {
             username:''
         };
+        $scope.historyMessage = [];
+        $scope.historyMessageIndex = 0;
 
         $scope.change_password_data = {
             old:'',
@@ -69,13 +71,38 @@
         });
         $scope.onchat = function(){
             socketEmit('chat',$scope.chat.message);
+            $scope.historyMessage.push($scope.chat.message);
+            if ($scope.historyMessage.length > 100) {
+                $scope.historyMessage.shift();
+            }
+            $scope.historyMessageIndex = $scope.historyMessage.length;
             $scope.chat.message = "";
+        };
+        $scope.chatKeyUp = function(ev){
+            if (ev.ctrlKey || ev.shiftKey || ev.altKey) {
+                return;
+            }
+            if (ev.which === 38) {
+                if ($scope.historyMessageIndex > $scope.historyMessage.length) {
+                    $scope.historyMessageIndex = $scope.historyMessage.length;
+                }
+                $scope.historyMessageIndex -= 1;
+                $scope.chat.message = $scope.historyMessage[$scope.historyMessageIndex];
+            }
+            else if (ev.which === 40) {
+                if ($scope.historyMessageIndex < -1) {
+                    $scope.historyMessageIndex = -1;
+                }
+                $scope.historyMessageIndex += 1;
+                $scope.chat.message = $scope.historyMessage[$scope.historyMessageIndex];
+            }
         };
 
         socket.on('disconnect',function () {
             $scope.$apply(function () {
                 $scope.isLogin = false;
                 $scope.message = [];
+                $scope.historyMessage = [];
             });
             $('modal').each(function(i,o){
                 $scope.$apply(function () {
@@ -87,6 +114,7 @@
             socketEmit('logout');
             $scope.isLogin = false;
             $scope.message = [];
+            $scope.historyMessage = [];
             $('modal').each(function(i,o){
                 $scope.closeModal(o.id);
             });
@@ -171,6 +199,7 @@
         socket.on('link',function (linkid) {
             $scope.$apply(function () {
                 $scope.link_id = linkid;
+                $scope.historyMessage = [];
 
                 $scope.links.forEach(function (link) {
                     if (link.id === linkid) {

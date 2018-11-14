@@ -92,7 +92,7 @@
     </div>
     <div class="fixed-bottom bg-dark lmc-chat">
         <form ng-submit="onchat()">
-            <input ng-model="chat.message" placeholder="在这里输入文字或命令然后按回车以聊天或使用命令" />
+            <input ng-keyup="chatKeyUp($event)" ng-model="chat.message" placeholder="在这里输入文字或命令然后按回车以聊天或使用命令" />
             <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
         </form>
     </div>
