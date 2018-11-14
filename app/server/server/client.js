@@ -50,6 +50,10 @@ function bindEvent(client) {
             return `<span class="color-${color}">${msg}</span>`;
         });
 
+        text = text.replace(/§([klmnor])([^§]*)/ig, (regex, style, msg) => {
+            return `<span class="lmc-chat-style-${style}">${msg}</span>`;
+        });
+
         text = text.replace(/((([A-Za-z]{3,9}:(?:\/\/))(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.))((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\-\.\!\/\\\w]*))?)/gi, (regex) => {
             return `<a href="${regex}" target="_blank">${regex}</a>`;
         });
@@ -189,7 +193,7 @@ function parseVanilla(jsonMsg) {
             return`§${color}你悄悄地对${player}说:${msg}`;
         case 'chat.type.advancement.task':
             player      = jsonMsg.with[0].insertion?jsonMsg.with[0].insertion:'未知玩家';
-            return`§${player}取得了未知进度`;
+            return`§${color}${player}取得了未知进度`;
 
     }
 

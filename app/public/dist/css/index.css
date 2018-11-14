@@ -51,6 +51,10 @@ body{
 .lmc-content p .color-7 { color: #9A9A9A; }
 .lmc-content p .color-8 { color: #43443E; }
 .lmc-content p .color-9 { color: #412BFF; }
+.lmc-content p .lmc-chat-style-l{font-weight: bold;}
+.lmc-content p .lmc-chat-style-m{text-decoration: line-through;}
+.lmc-content p .lmc-chat-style-n{text-decoration: underline;}
+.lmc-content p .lmc-chat-style-o{font-style: italic;}
 
 .lmc-content p a {
     text-decoration: none;
