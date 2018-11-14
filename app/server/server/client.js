@@ -78,6 +78,10 @@ function bindEvent(client) {
         client.config.config.userConfig.session = session;
         client.emit('update_config');
     });
+    bot.on('lmc:plugin:autoconnect:end',()=>{
+        client.config.config.userConfig.islogin = false;
+        client.emit('update_config');
+    });
     bot.on('login',(packet)=>{
         client.emit('login',packet);
     });
@@ -482,8 +486,9 @@ class Client extends EventEmitter{
     constructor(config){
         super(config);
         this.config = {};
-        this.tempMessage = [];
+        // this.tempMessage = [];
         this.message = [];
+        this.runId = 0;
 
         this.client = null;
         this.isConnect = false;
@@ -551,9 +556,10 @@ class Client extends EventEmitter{
 
     setClientSocket(socket){
         this.unloadClientSocket();
+        this.runId += 1;
         this.clientSocket = socket;
         const self = this;
-        this.tempMessage = [];
+        // this.tempMessage = [];
         this.on('message',this.messageListen);
         this.on('update_health',this.healthListen);
         this.on('lmc:connect',this.connectListen);
@@ -564,21 +570,24 @@ class Client extends EventEmitter{
         this.connectListen();
         this.loginListen();
 
-        this.tempMessage = this.message.slice();
-
-        while (this.tempMessage.length > 0) {
-            emitMessage(this.clientSocket,this.tempMessage.shift());
-        }
+        let tempMessage = this.message.slice();
+        let index = tempMessage.length - 1;
+        let runId = this.runId;
+        let sendMessage = ()=>{
+            if (self.clientSocket){
+                self.clientSocket.emit('insert_message',tempMessage[index]);
+            }
+            index -= 1;
+            if (index >= 0 && self.clientSocket && runId === self.runId) {
+                setTimeout(sendMessage,500);
+            }
+        };
+        sendMessage();
     }
 
 
     messageListen (packet){
-        if (this.tempMessage.length === 0) {
-            emitMessage(this.clientSocket,packet);
-        }
-        else {
-            this.tempMessage.push(packet);
-        }
+        emitMessage(this.clientSocket,packet);
     }
     healthListen (packet){
         this.clientSocket && this.clientSocket.emit('update_health',packet);

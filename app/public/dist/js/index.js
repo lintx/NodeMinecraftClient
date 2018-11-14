@@ -56,6 +56,11 @@
             new:'',
             re:''
         };
+        socket.on('insert_message',function (message) {
+            $scope.$apply(function () {
+                $scope.message.splice(0,0,message);
+            });
+        });
         socket.on('message',function (message) {
             $scope.$apply(function () {
                 $scope.message.push(message);
@@ -108,6 +113,11 @@
             $scope.$apply(function () {
                 // $scope.isLogin = status;
                 $scope.status.username = data.username;
+                $scope.loginData.username = '';
+                $scope.loginData.password = '';
+                $scope.registerData.username = '';
+                $scope.registerData.password = '';
+                $scope.registerData.repassword = '';
             });
         });
         socket.on('links',function (links) {
@@ -148,14 +158,9 @@
         };
         $scope.login = function () {
             socketEmit('login',$scope.loginData.username,$scope.loginData.password);
-            $scope.loginData.username = '';
-            $scope.loginData.password = '';
         };
         $scope.register = function () {
             socketEmit('register',$scope.registerData.username,$scope.registerData.password);
-            $scope.registerData.username = '';
-            $scope.registerData.password = '';
-            $scope.registerData.repassword = '';
         };
 
         $scope.selectlink = function(link){

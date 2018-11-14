@@ -23,8 +23,10 @@ function runReConnect(client, autoconnect) {
             },autoconnect.config.delay*1000);
         }
         else {
+            client.option.islogin = false;
+            client.emit('lmc:plugin:autoconnect:end');
             isopen = false;
-            client.emit('lmc:plugin',{plugin:'autoconnect',message:`第 ${autoconnect.tryCount} 次尝试重新连接后依然没有成功，尝试次数已达上限，停止尝试重新连接`});
+            client.emit('lmc:plugin',{plugin:'autoconnect',message:`第 ${autoconnect.tryCount-1} 次尝试重新连接后依然没有成功，尝试次数已达上限，停止尝试重新连接`});
         }
     }
 }
