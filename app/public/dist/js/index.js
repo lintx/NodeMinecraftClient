@@ -27,8 +27,8 @@
     }
 
 
-    var app = angular.module('app',['ngMessages','luegg.directives']);
-    app.controller('lmcCtrl',['$scope','ModalService',lmcCtrl]);
+    var app = angular.module('app',['ngMessages']);
+    app.controller('lmcCtrl',['$scope','$element','ModalService',lmcCtrl]);
     app.filter('unsafe', ['$sce', function ($sce) {
         return function (val) {
             return $sce.trustAsHtml(val);
@@ -38,7 +38,7 @@
             return moment(val).format('YYYY-MM-DD HH:mm:ss');
         }
     });
-    function lmcCtrl($scope,ModalService) {
+    function lmcCtrl($scope,$element,ModalService) {
         $scope.showTime = true;
         $scope.isLogin = false;
         $scope.isAdmin = false;
@@ -51,6 +51,7 @@
         $scope.status = {
             username:''
         };
+
         $scope.change_password_data = {
             old:'',
             new:'',
@@ -324,6 +325,25 @@
                 ngModel.$formatters.push(function(val) {
                     return '' + val;
                 });
+            }
+        };
+    });
+    app.directive('repeatHack', function($rootScope) {
+        return {
+            link: function(scope, element, attrs) {
+                var _window = angular.element(window);
+                var _document = angular.element(document);
+                var _html = angular.element('html');
+                if (!$rootScope.__repeatHackIsInit) {
+                    $rootScope.__repeatHackIsInit = true;
+                    $rootScope.__repeatHackIsBottom = true;
+                    _window.on('scroll',function () {
+                        $rootScope.__repeatHackIsBottom = _document.height() - _window.height() - _html.scrollTop() <= 50;
+                    })
+                }
+                if ((scope.$last || scope.$first) && $rootScope.__repeatHackIsBottom){
+                    _html.animate({scrollTop:_document.height() - _window.height()},100);
+                }
             }
         };
     });

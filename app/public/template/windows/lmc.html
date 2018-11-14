@@ -81,7 +81,7 @@
                 <p>---</p>
             </div>
             <div class="lmc-message">
-                <p ng-repeat="msg in message">
+                <p ng-repeat="msg in message" repeat-hack>
                     <span ng-show="showTime" class="lmc-message-time">{{msg.time|int2date}} </span>
                     <span ng-if="msg.type==='error'" class="text-danger"> [错误信息] </span>
                     <span ng-if="msg.type==='info'" class="text-info"> [提示信息] </span>
