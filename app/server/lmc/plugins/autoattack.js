@@ -21,7 +21,7 @@ class AutoAttack {
             if (self.client.isConnect && self.config.open) {
                 self.autoAttack();
             }
-        },500);
+        },600);
     }
 
     attack(target){
