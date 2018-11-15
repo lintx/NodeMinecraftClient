@@ -23,7 +23,7 @@ function bindEvent(client, autoattack) {
         if (canAttack && autoattack.config.open) {
             autoattack.autoAttack();
         }
-    },600);
+    },650);
 }
 
 class AutoAttack {
