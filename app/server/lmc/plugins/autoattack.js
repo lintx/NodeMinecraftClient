@@ -2,11 +2,28 @@ const Entities = require('../helper/entities');
 const AutoAttackModule = require('../../server/model/linkmodule').AutoAttackConfig;
 
 function bindEvent(client, autoattack) {
-    client.on('update_time',function (packet) {
-        if (autoattack.config.open) {
-            autoattack.autoAttack();
-        }
+    // client.on('update_time',function (packet) {
+    //     if (autoattack.config.open) {
+    //         autoattack.autoAttack();
+    //     }
+    // });
+    let canAttack = false;
+    client.on('lmc:connect',()=>{
+
     });
+    client.on('lmc:disconnect',()=>{
+        canAttack = false;
+    });
+    client.on('login', function(packet) {
+        setTimeout(()=>{
+            canAttack = true;
+        },1000);
+    });
+    setInterval(()=>{
+        if (canAttack && self.config.open) {
+            self.autoAttack();
+        }
+    },600);
 }
 
 class AutoAttack {
@@ -16,12 +33,7 @@ class AutoAttack {
         this.client = client;
         const self = this;
 
-        // bindEvent(client,this);
-        setInterval(()=>{
-            if (self.client.isConnect && self.config.open) {
-                self.autoAttack();
-            }
-        },600);
+        bindEvent(client,this);
     }
 
     attack(target){
