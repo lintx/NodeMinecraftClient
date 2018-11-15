@@ -27,7 +27,7 @@ class AutoFish {
                     if (self.fishing) {
                         if (self.config.timeout > 0 && time - self.lastUseTime > self.config.timeout*1000) {
                             //检测到超过时间依然在钓鱼，收杆
-                            self.fishing = true;
+                            self.fishing = false;
                             self.client.emit('lmc:plugin',{plugin:'autofish',message:`检测到超过时间(${self.config.timeout}秒)依然在钓鱼，收杆并重新抛竿`});
                             use_fish_rod();
                         }

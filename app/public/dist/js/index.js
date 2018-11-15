@@ -363,15 +363,21 @@
                 var _window = angular.element(window);
                 var _document = angular.element(document);
                 var _html = angular.element('html');
+                var _body = angular.element('body');
                 if (!$rootScope.__repeatHackIsInit) {
                     $rootScope.__repeatHackIsInit = true;
                     $rootScope.__repeatHackIsBottom = true;
                     _window.on('scroll',function () {
-                        $rootScope.__repeatHackIsBottom = _document.height() - _window.height() - _html.scrollTop() <= 50;
+                        $rootScope.__repeatHackIsBottom = _document.height() - _window.height() - (_html.scrollTop() || _body.scrollTop()) <= 50;
+                        // alert(_document.height() + '-' + _window.height() + '-' + angular.element('body').scrollTop())
                     })
                 }
                 if ((scope.$last || scope.$first) && $rootScope.__repeatHackIsBottom){
-                    _html.animate({scrollTop:_document.height() - _window.height()},100);
+                    // _html.animate({scrollTop:_document.height() - _window.height()},100);
+                    // window.scrollTo(0,_document.height() - _window.height());
+                    var top = _document.height() - _window.height();
+                    _html.scrollTop(top);
+                    _body.scrollTop(top);
                 }
             }
         };

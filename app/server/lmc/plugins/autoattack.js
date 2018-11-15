@@ -14,8 +14,14 @@ class AutoAttack {
         this._config = new AutoAttackModule();
         this.config = config;
         this.client = client;
+        const self = this;
 
-        bindEvent(client,this);
+        // bindEvent(client,this);
+        setInterval(()=>{
+            if (self.client.isConnect && self.config.open) {
+                self.autoAttack();
+            }
+        },500);
     }
 
     attack(target){
