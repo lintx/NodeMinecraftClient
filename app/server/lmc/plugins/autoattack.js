@@ -20,8 +20,8 @@ function bindEvent(client, autoattack) {
         },1000);
     });
     setInterval(()=>{
-        if (canAttack && self.config.open) {
-            self.autoAttack();
+        if (canAttack && autoattack.config.open) {
+            autoattack.autoAttack();
         }
     },600);
 }
