@@ -33,7 +33,7 @@ class AutoAttack {
         this.client = client;
         const self = this;
 
-        bindEvent(client,this);
+        // bindEvent(client,this);
     }
 
     attack(target){
