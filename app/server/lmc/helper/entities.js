@@ -38,7 +38,7 @@ class Entities {
         this.client = client;
         this.entities = {};
 
-        bindEvent(client,this);
+        //bindEvent(client,this);
     }
 
     getEntity(index){
