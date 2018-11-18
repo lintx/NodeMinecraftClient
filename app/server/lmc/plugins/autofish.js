@@ -110,7 +110,7 @@ class AutoFish {
                 client.write('use_item',{hand:0});
             }
         }
-        // bindEvent();
+        bindEvent();
     }
 
     autoSwitchFishrod (){

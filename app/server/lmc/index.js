@@ -111,14 +111,14 @@ class LinTxMinecraftClient extends EventEmitter{
         }
         self._client = mcp.createClient(option);
 
-        // var oldEmit = self._client.emit;
-        // self._client.emit = function (event) {
-        //     var args = Array.prototype.slice.call(arguments,1),newArgs = [event].concat(args);
-        //     if (self._client) oldEmit.apply(self._client,newArgs);
-        //     if (event.indexOf('raw') === -1) {
-        //         self.emit.apply(self,newArgs);
-        //     }
-        // };
+        var oldEmit = self._client.emit;
+        self._client.emit = function (event) {
+            var args = Array.prototype.slice.call(arguments,1),newArgs = [event].concat(args);
+            if (self._client) oldEmit.apply(self._client,newArgs);
+            if (event.indexOf('raw') === -1) {
+                self.emit.apply(self,newArgs);
+            }
+        };
         if (self._client && self._client.wait_connect) {
             next();
         }
