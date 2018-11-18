@@ -274,7 +274,7 @@ module.exports = (socket)=>{
         if (!isAdmin()) {
             return error('你不是管理员');
         }
-        db.query('select `u`.`id` as `id`,`u`.`username` as `username`,`u`.`status` as `status`,count(`l`.`id`) as `linkcount` from `user` u left join `link` l on `l`.`user_id`=`u`.`id` where `u`.`username`like ?',['%'+username+'%'],(err,result)=>{
+        db.query('select `u`.`id` as `id`,`u`.`username` as `username`,`u`.`status` as `status`,count(`l`.`id`) as `linkcount` from `user` u left join `link` l on `l`.`user_id`=`u`.`id` where `u`.`username`like ? group by `u`.`id`',['%'+username+'%'],(err,result)=>{
             if (err){
                 return error('搜索失败，请重试[code=1]');
             }
@@ -359,7 +359,6 @@ module.exports = (socket)=>{
     });
 
     function isAdmin() {
-        return true;
         return userId === adminId;
     }
 };

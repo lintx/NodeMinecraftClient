@@ -41,10 +41,7 @@ class AutoAttack {
         if (target && target instanceof Entities.Entitie) {
             this.client.write('use_entity',{
                 target:target.id,
-                mouse:1,
-                x:target.position.x,
-                y:target.position.y,
-                z:target.position.z
+                mouse:1
             });
         }
     }
