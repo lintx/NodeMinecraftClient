@@ -5,6 +5,7 @@ var path = require('path');
 var config = require('../config/config');
 require('./server/db');
 require('./server/loadallclient');
+process.env.READABLE_STREAM = 'disable';
 
 var app = express();
 var server = http.createServer(app);
@@ -33,6 +34,9 @@ app.get('/socket.io.js',function (req, res) {
 });
 
 app.set('port',config.serverListen);
+app.get('*', function(req, res){
+    res.send('what???', 404);
+});
 
 server.listen(config.serverListen,function () {
     console.log('服务器已经运行，端口：'+config.serverListen);
