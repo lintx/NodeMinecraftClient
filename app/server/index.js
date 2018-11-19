@@ -6,6 +6,8 @@ var config = require('../config/config');
 require('./server/db');
 require('./server/loadallclient');
 process.env.READABLE_STREAM = 'disable';
+// const easyMonitor = require("easy-monitor");
+// easyMonitor("backend");
 
 var app = express();
 var server = http.createServer(app);
